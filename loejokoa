@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOE Challenge: Eskuduntzen Kontrol-panela</title>
+    <!-- Carga de Tailwind CSS (Kanpoko baliabidea da, Moodle-k ahalbidetu beharko luke) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fc;
+            padding: 0; /* Remove padding for better Moodle integration */
+        }
+        .card {
+            cursor: grab;
+            transition: transform 0.1s, box-shadow 0.1s;
+            border-radius: 6px;
+        }
+        .card:active {
+            cursor: grabbing;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+        }
+        .drop-zone {
+            min-height: 150px;
+            border: 3px dashed #d1d5db;
+            transition: all 0.2s;
+        }
+        .drop-zone.active {
+            border-color: #10b981;
+            background-color: #ecfdf5;
+            transform: scale(1.02);
+        }
+        .defense-card {
+            border-left: 5px solid #3b82f6;
+        }
+        .limit-card {
+            border-left: 5px solid #ef4444;
+        }
+        .scenario-solved-correct {
+            background-color: #059669 !important; /* Tailwind green-600 */
+            border: 3px solid #10b981; /* Tailwind emerald-500 */
+        }
+        .scenario-solved-incorrect {
+            background-color: #dc2626 !important; /* Tailwind red-600 */
+            border: 3px solid #f87171; /* Tailwind red-400 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-6xl mx-auto p-4 md:p-8">
+        
+        <!-- HEADER (Shared between Student and Teacher) -->
+        <header class="text-center mb-6 bg-white p-6 rounded-xl shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-blue-800" data-translate="appTitle">LOE Challenge: BDren Bideragarritasuna</h1>
+            <p class="text-gray-600 mt-2" data-translate="appSubtitle">Probatu zure eskuduntzak Udal Berrikuspen Mahaian.</p>
+            
+            <div id="user-info-bar" class="mt-4 text-sm text-gray-500 border-t pt-2 hidden">
+                <p><span class="font-bold">Erabiltzaile Identifikazioa:</span> <span id="student-id-display" class="font-mono text-sm text-blue-600"></span></p>
+                <button onclick="document.location.reload()" class="ml-4 text-xs text-red-500 hover:text-red-700 font-medium">
+                    (<span data-translate="logoutButton">Saioa Amaitu</span>)
+                </button>
+            </div>
+        </header>
+
+        <!-- PANTALLA 0: HIZKUNTZA ETA AUTENTIFIKAZIOA -->
+        <div id="auth-area" class="hidden max-w-lg mx-auto bg-white p-8 rounded-xl shadow-2xl mt-10">
+            <h2 class="text-3xl font-extrabold text-blue-800 mb-6 text-center">LOE Challenge</h2>
+            
+            <!-- Hizkuntza Aukeraketa -->
+            <div class="mb-6 border-b pb-4">
+                <h3 class="text-xl font-bold text-gray-700 mb-3 text-center">Aukeratu Hizkuntza / Elige Idioma</h3>
+                <div class="flex justify-center space-x-4">
+                    <!-- Fija las funciones al objeto global window -->
+                    <button onclick="window.currentLang='eu'; window.updateTexts(); window.showLoginForm('eu');" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-150">
+                        Euskara
+                    </button>
+                    <button onclick="window.currentLang='es'; window.updateTexts(); window.showLoginForm('es');" class="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition duration-150">
+                        Castellano
+                    </button>
+                </div>
+            </div>
+
+            <!-- Formulário EU -->
+            <div id="login-form-eu">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-translate="loginTitle">Plataformarako Sarbidea</h3>
+                <p class="text-gray-600 mb-6" data-translate="loginHint">Sartu zure NANa, matrikula-zenbakia, edo izena progresioari hasiera emateko.</p>
+                
+                <input type="text" id="user-id-input" placeholder="Sartu hemen zure IDa (Irakaslea ere bada)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4 uppercase">
+                
+                <button onclick="window.handleLogin(window.currentLang)" class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-150" data-translate="loginButton">
+                    Sartu
+                </button>
+                <p id="auth-message-eu" class="text-red-500 text-sm mt-3"></p>
+            </div>
+            
+            <!-- Formulário ES (Oculto por defecto) -->
+            <div id="login-form-es" class="hidden">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4" data-translate="loginTitle">Acceso a la Plataforma</h3>
+                <p class="text-gray-600 mb-6" data-translate="loginHint">Introduce tu DNI, número de matrícula o nombre.</p>
+                
+                <input type="text" id="user-id-input-es" placeholder="Introduce aquí tu ID (también Profesor)" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 mb-4 uppercase">
+                
+                <button onclick="window.handleLogin(window.currentLang)" class="w-full px-6 py-3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-150" data-translate="loginButton">
+                    Acceder
+                </button>
+                <p id="auth-message-es" class="text-red-500 text-sm mt-3"></p>
+            </div>
+        </div>
+
+        <!-- PANTALLA 1: IRAKASLEAREN KONTROL-PANELA (DASHBOARD) -->
+        <div id="dashboard-area" class="hidden mt-6 bg-white p-8 rounded-xl shadow-2xl">
+            <h2 id="teacher-dashboard-title" class="text-3xl font-extrabold text-purple-700 mb-2">Irakaslearen Kontrol-panela</h2>
+            <p id="teacher-dashboard-subtitle" class="text-gray-600 mb-6">Ikasle guztien eskuduntza-erronken progresioa. (IDa: <span id="teacher-id-display" class="font-mono font-bold"></span>)</p>
+
+            <button onclick="window.loadAllStudentProgress()" id="update-progress-button" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 mb-4">
+                Progresioa Eguneratu
+            </button>
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-md">
+                    <thead class="bg-gray-100">
+                        <tr>
+                            <th id="student-id-header" class="p-3 text-left text-sm font-semibold text-gray-600 uppercase tracking-wider">Ikasle IDa</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">A</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">B</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">C</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">D</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">E</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">F</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">G</th>
+                            <th class="p-3 text-center text-sm font-semibold text-gray-600 uppercase tracking-wider">H</th> <!-- NEW SCENARIO H HEADER -->
+                            <th id="total-correct-header" class="p-3 text-center text-sm font-extrabold text-purple-700 uppercase tracking-wider bg-purple-200">Total Zuzena</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dashboard-table-body" class="divide-y divide-gray-200">
+                        <!-- Datuak hemen kargatuko dira -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <button onclick="document.location.reload()" id="teacher-logout-button" class="mt-6 px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500">
+                Saioa Amaitu
+            </button>
+        </div>
+
+
+        <!-- PANTALLA 2: IKASLE JOKOA (GAME MAIN CONTENT) -->
+        <div id="game-main-content" class="hidden">
+
+            <main>
+                <!-- SECCIÓN 1: SELECCIÓN DEL ESCENARIO -->
+                <div id="scenario-selection" class="mb-8 hidden">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4" data-translate="selectScenarioTitle">1. Agertokia Aukeratu</h2>
+                    <div id="scenario-buttons" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Los botones de escenario se generan aquí -->
+                    </div>
+                    <div id="current-scenario-display" class="mt-6 p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-md hidden">
+                        <p class="font-semibold text-yellow-800"><span data-translate="activeScenario">Agertoki Aktiboa</span>: <span id="scenario-title" class="font-bold"></span></p>
+                        <p id="scenario-description" class="text-sm text-yellow-700"></p>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 2: DEFENSA Y ZONA DE JUEGO -->
+                <div id="game-area" class="mt-10 hidden">
+                    <h2 class="text-2xl font-bold text-gray-700 mb-4" data-translate="mountDefenseTitle">2. Zure Defentsa Muntatu (Arrastatu eta Askatu)</h2>
+
+                    <div class="grid lg:grid-cols-3 gap-8">
+                        <!-- Columna 1: Cartas de Concepto LOE -->
+                        <div class="lg:col-span-1 bg-white p-4 rounded-xl shadow-md">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-3 border-b pb-2" data-translate="conceptCardsTitle">LOE Kontzeptu Txartelak</h3>
+                            <div id="concept-cards" class="flex flex-wrap gap-2">
+                                <!-- Las cartas de concepto se generan aquí -->
+                            </div>
+                        </div>
+
+                        <!-- Columna 2: Zona de Defensa -->
+                        <div class="lg:col-span-1 bg-gray-50 p-6 rounded-xl shadow-inner drop-zone" id="defense-zone">
+                            <!-- Los títulos se actualizan mediante JS en resetGameArea/updateTexts -->
+                            <h3 class="text-xl font-semibold text-blue-700 mb-3" data-translate="defenseZoneTitle">BDren Defentsa Eremua</h3>
+                            <p class="text-gray-500 text-sm" data-translate="defenseZoneHint">Arrastatu hona Barnealdeen Diseinatzailearen eskuduntza justifikatzen duten 2 edo 3 kontzeptuak.</p>
+                        </div>
+
+                        <!-- Columna 3: Zona de Límites / Ataque -->
+                        <div class="lg:col-span-1 bg-red-50 p-6 rounded-xl shadow-inner drop-zone" id="limit-zone">
+                            <!-- Los títulos se actualizan mediante JS en resetGameArea/updateTexts -->
+                            <h3 class="text-xl font-semibold text-red-700 mb-3" data-translate="limitZoneTitle">Udalaren Mugak eta Erasoak</h3>
+                            <p class="text-gray-500 text-sm" data-translate="limitZoneHint">Arrastatu hona eskuduntza baliogabetu edo muga dezaketen kontzeptuak.</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 text-center">
+                        <button id="check-button" class="px-8 py-3 bg-green-600 text-white font-bold rounded-lg shadow-lg hover:bg-green-700 transition duration-150 disabled:opacity-50" disabled data-translate="checkButtonText">
+                            Eskuduntza Bideragarritasuna Egiaztatu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN 3: RESULTADO Y RETROALIMENTACIÓN -->
+                <div id="result-feedback" class="mt-10 p-6 rounded-xl shadow-xl hidden">
+                    <h2 id="result-title" class="text-3xl font-extrabold mb-3"></h2>
+                    <div id="result-message" class="text-lg mb-4"></div>
+                    <div id="solution-details" class="bg-gray-100 p-4 rounded-lg border-l-4 border-gray-400">
+                        <h3 class="font-bold text-gray-700 mb-2" data-translate="solutionTitle">Lege Justifikazioa eta Estrategia:</h3>
+                        <ul id="strategy-list" class="list-disc list-inside text-gray-700"></ul>
+                    </div>
+                    <button onclick="window.resetGame()" class="mt-6 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700" data-translate="newChallengeButton">
+                        Erronka Berria
+                    </button>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- FIREBASE AND GAME LOGIC SCRIPT (Type: module to handle imports) -->
+    <script type="module">
+        // Firebase Imports (using the specific version URLs for compatibility)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, collection, getDocs, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
+        // --- GLOBAL STATE ---
+        // Expose state and functions to the window object so they can be called from HTML onclick attributes
+        window.firebase = {
+            app: null,
+            db: null,
+            auth: null,
+            studentId: null, 
+            appId: typeof __app_id !== 'undefined' ? __app_id : 'default-app-id',
+            progress: {}, // Local score map
+            role: 'NONE' // NONE, STUDENT, TEACHER
+        };
+
+        const TEACHER_KEY = "IRAKASLEA"; 
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+
+        // --- FIREBASE SETUP & AUTH ---
+        async function setupFirebaseAndAuth() {
+            try {
+                // setLogLevel('Debug'); // Debugging aktibatzeko
+                
+                window.firebase.app = initializeApp(firebaseConfig);
+                window.firebase.db = getFirestore(window.firebase.app);
+                window.firebase.auth = getAuth(window.firebase.app);
+
+                const auth = window.firebase.auth;
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+                
+                window.dispatchEvent(new Event('firebaseReady')); 
+
+            } catch (error) {
+                console.error("Firebase setup failed:", error);
+                document.getElementById('auth-message-eu').textContent = "Errorea Firebase-ekin konektatzean.";
+                document.getElementById('auth-message-es').textContent = "Error al conectar con Firebase.";
+            }
+        }
+        
+        // --- FIREBASE DATA FUNCTIONS (Exposed globally) ---
+        function getScoreRef(id) {
+            const { db, appId } = window.firebase;
+            // Public path: /artifacts/{appId}/public/data/game_scores/{studentId}
+            return doc(db, 'artifacts', appId, 'public', 'data', 'game_scores', id);
+        }
+
+        window.loadUserProgress = async (studentId) => {
+            const { db, progress } = window.firebase;
+            if (!db || !studentId) return;
+
+            const progressRef = getScoreRef(studentId);
+            
+            try {
+                const docSnap = await getDoc(progressRef);
+                window.firebase.progress = {}; // Clear local progress
+                if (docSnap.exists()) {
+                    // Update the global progress map
+                    Object.assign(window.firebase.progress, docSnap.data().scores || {});
+                }
+                // Render the scenario buttons with the latest progress
+                window.renderScenarioButtons(window.firebase.progress);
+
+            } catch (error) {
+                console.error("Error loading progress:", error);
+            }
+        };
+
+        window.saveScenarioResult = async (scenarioId, isCorrect) => {
+            const { db, studentId, progress } = window.firebase;
+            if (!db || !studentId) {
+                console.error("User ID not set. Cannot save score.");
+                return;
+            }
+
+            const timestamp = new Date().toISOString();
+            
+            progress[scenarioId] = { correct: isCorrect, timestamp: timestamp };
+            
+            const progressRef = getScoreRef(studentId);
+            
+            try {
+                await setDoc(progressRef, { 
+                    studentId: studentId,
+                    lastUpdated: timestamp,
+                    scores: progress 
+                }, { merge: true });
+                console.log(`Scenario ${scenarioId} saved successfully for ${studentId}.`);
+            } catch (error) {
+                console.error("Error saving score:", error);
+            }
+        };
+        
+        window.loadAllStudentProgress = async () => {
+            const { db, appId } = window.firebase;
+            if (!db) {
+                console.error("Database not ready.");
+                return;
+            }
+            
+            const scoresCollectionRef = collection(db, 'artifacts', appId, 'public', 'data', 'game_scores');
+            
+            document.getElementById('dashboard-table-body').innerHTML = `<tr><td colspan="10" class="p-4 text-center text-blue-600 font-semibold">Kargatzen... / Cargando...</td></tr>`;
+            
+            try {
+                const querySnapshot = await getDocs(scoresCollectionRef);
+                const allScores = [];
+
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const studentId = data.studentId;
+                    const scores = data.scores || {};
+                    
+                    let correctCount = 0;
+                    Object.keys(scores).forEach(scenarioId => {
+                        // Check against the full list of scenarios (A to H, 8 total)
+                        if (scores[scenarioId] && scores[scenarioId].correct) {
+                            correctCount++;
+                        }
+                    });
+
+                    allScores.push({ studentId, scores, correctCount });
+                });
+
+                window.renderDashboardTable(allScores);
+
+            } catch (error) {
+                console.error("Error loading all student progress:", error);
+                document.getElementById('dashboard-table-body').innerHTML = `<tr><td colspan="10" class="p-4 text-center text-red-600">Errorea datuak kargatzean. / Error al cargar los datos.</td></tr>`;
+            }
+        };
+
+        // --- GLOBAL UI & GAME FLOW VARIABLES ---
+        window.currentLang = 'eu'; // Idioma por defecto antes de la selección inicial
+        window.currentScenario = null; 
+
+        // Raw Data (moved outside the module scope where possible, but kept here for completeness in Moodle single file)
+        const rawData = {
+             scenarios: [
+                { id: 'A', es: { title: 'A. El Cerramiento de Balcón (Volumen)', summary: 'Cerrar un balcón con estructura ligera y vidrio, aumentando la superficie útil interior.', solution: 'COLABORACIÓN NECESARIA', strategy: ['**Límite Urbanístico (Alteración del Volumen):** El aumento de la superficie habitable o construida obliga a revisar el coeficiente de edificabilidad, lo que empuja el proyecto a Obra Mayor o requiere la firma de un Arquitecto/Técnico para el cálculo volumétrico.', '**Estrategia DI:** El DI puede hacer el diseño, pero debe colaborar con un técnico superior para la validación urbanística y volumétrica ante el municipio.']}, eu: { title: 'A. Balkoiaren Itxitura (Bolumena)', summary: 'Balkoi bat egitura arinez eta beiraz ixtea, barruko azalera erabilgarria handituz.', solution: 'NAHITAEZKO LANKIDETZA', strategy: ['**Hirigintza Muga (Bolumenaren Aldaketa):** Bizigarri den edo eraikitako azaleraren handitzeak eraikigarritasun koefizientea berrikustea dakar. Horrek proiektua Obra Nagusira bultzatzen du edo Arkitekto/Teknikari baten sinadura eskatzen du kalkulu bolumetrikoa egiteko.', '**BD Estrategia:** BDk diseinua egin dezake, baina udalerriaren aurrean hirigintza eta bolumen balioztapeneko goi mailako teknikari batekin lankidetzan aritu behar du.']}},
+                { id: 'B', es: { title: 'B. El Cambio de Uso Mayor (Ermita a Kafe Antzokia)', summary: 'Rehabilitar una ermita del S. XIX para un Kafe Antzokia (uso de pública concurrencia). No se toca estructura.', solution: 'ID COMPETENTE', strategy: ['**Especialización Funcional:** El objeto principal es la **Adecuación Funcional** del espacio y el diseño interior (aforo, distribución, estética), lo cual es competencia de la DI.', '**Uso de Recinto:** El DI es plenamente competente para garantizar el cumplimiento de **DB-SUA (Seguridad de Uso)** y **DB-SI (Incendio)** dentro del recinto, demostrando la **Modificación NO Esencial**.', '**Colaboración:** Solo sería necesario un Arquitecto para la consolidación estructural o si la normativa de Bienes Culturales lo exige, pero el DI lidera la adecuación del uso.']}, eu: { title: 'B. Erabilera Aldaketa Nagusia (Ermitatik Kafe Antzokira)', summary: 'XIX. mendeko ermita bat Kafe Antzoki (jendaurreko erabilera) baterako birgaitzea. Egiturarik ez da ukitzen.', solution: 'BD ESKUDUNA', strategy: ['**Espezializazio Funtzionala:** Helburu nagusia espazioaren **Egokitzapen Funtzionala** eta barne diseinua da (edukiera, banaketa, estetika), eta hori BDren eskuduntza da.', '**Esparru Erabilera:** BD erabat eskuduna da **DB-SUA (Erabilera Segurtasuna)** eta **DB-SI (Sutea)** betetzen direla bermatzeko, **Ezinbestekoa EZ den Aldaketa** dela frogatuz.', '**Lankidetza:** Arkitekto bat egituraren sendotzeagatik edo Kultur Ondasunen araudiak hala eskatzen badu bakarrik beharko litzateke, baina BDk gidatzen du erabileraren egokitzapena.']}},
+                { id: 'C', es: { title: 'C. La Segregación de Vivienda', summary: 'Dividir una vivienda grande en dos más pequeñas. Implica tirar tabiques no portantes y duplicar instalaciones de recinto.', solution: 'ID COMPETENTE', strategy: ['**Volumetría Neutra:** Es una obra **volumétricamente neutra** (no es Obra Mayor). El límite es el urbanismo (superficie mínima), no la obra en sí.', '**Especialización en Habitabilidad:** El DI es el técnico competente para demostrar la **Garantía de Habitabilidad** (DB-HS: ventilación, iluminación, superficie mínima) de las nuevas unidades.', '**Instalaciones de Recinto:** La duplicación de contadores/sub-contadores es **Instalación de Recinto** (Punto III), competencia directa del DI, sin afectar la acometida fija principal.']}, eu: { title: 'C. Etxebizitzaren Segregazioa', summary: 'Etxebizitza handi bat bi txikiagotan zatitzea. Egiturazkoak ez diren tabikeak bota eta esparruko instalazioak bikoiztea dakar.', solution: 'BD ESKUDUNA', strategy: ['**Bolumetria Neutroa:** **Bolumen aldetik neutroa** den obra da (ez da Obra Nagusia). Muga hirigintza da (gutxieneko azalera), ez obra bera.', '**Bizigarritasun Espezializazioa:** BD da unitate berrien **Bizigarritasunaren Bermea** (DB-HS: aireztapena, argiztapena, gutxieneko azalera) frogatzeko teknikari eskuduna.', '**Esparruko Instalazioak:** Kontagailuak/azpi-kontagailuak bikoiztea **Esparruko Instalazioa** da (III. puntua), BDren eskuduntza zuzena, hartune finko nagusiari eragin gabe.']}},
+                { id: 'D', es: { title: 'D. El Desafío de Instalaciones (Discoteca)', summary: 'Adecuación de local para Discoteca. Requiere insonorización pasiva y un potente sistema de climatización centralizada.', solution: 'COLABORACIÓN NECESARIA', strategy: ['**Segregación de Competencias:** El DI es plenamente competente para el diseño de la **Insonorización Pasiva** (tabiquería, acabados) y el cumplimiento de DB-HR.', '**Línea Roja (Instalaciones Fijas):** El "potente sistema de climatización centralizada" y los cálculos acústicos de emisión son una **Instalación Fija** de gran envergadura. Esto requiere la co-firma o proyecto segregado de un Ingeniero Industrial o Ingeniero Técnico.', '**Estrategia DI:** Liderar el proyecto arquitectónico/funcional, pero delegar la memoria de cálculo industrial en el Ingeniero.']}, eu: { title: 'D. Instalazioen Erronka (Diskoteka)', summary: 'Diskoteka baterako lokalaren egokitzapena. Insonorizazio pasiboa eta klima-sistema zentralizatu indartsu bat behar ditu.', solution: 'NAHITAEZKO LANKIDETZA', strategy: ['**Eskuduntzen Segregazioa:** BD erabat eskuduna da **Insonorizazio Pasiboaren** (tabikeak, akaberak) diseinuan eta DB-HR betetzean.', '**Marra Gorria (Instalazio Finkoak):** "Klima-sistema zentralizatu indartsua" eta emisio akustikoen kalkuluak tamaina handiko **Instalazio Finko** bat dira. Horrek Industria Ingeniari edo Ingeniari Tekniko baten sinadura edo proiektu bereizia eskatzen du.', '**BD Estrategia:** Proiektu arkitektoniko/funtzionala gidatzea, baina kalkulu industrialaren memoria Ingeniariari eskuordetzea.']}},
+                { id: 'E', es: { title: 'E. Transformación de Local (Garaje a Oficina/Vivienda)', summary: 'Cambio de uso de un local de garaje/almacén a oficina profesional o vivienda. No afecta estructura.', solution: 'ID COMPETENTE', strategy: ['**Competencia Principal:** El DI es el técnico idóneo para diseñar la **Adecuación Funcional** y garantizar el cumplimiento del CTE (DB-HS/SUA) para el nuevo uso (oficina/vivienda).', '**Límite Urbanístico Secundario:** El cambio de uso requiere confirmación de la compatibilidad en el planeamiento, pero la obra de adaptación es de **Escasa Entidad Constructiva** y cae bajo el DI.', '**Defensa Clave:** Usar la **Jerarquía Normativa** para evitar que la OOMM exija Arquitecto/Ingeniero sin base en la LOE.']}, eu: { title: 'E. Lokalaren Eraldaketa (Garajetik Bulegora/Etxebizitzara)', summary: 'Garaje/biltegi lokal baten erabilera aldatzea bulego profesional edo etxebizitza bihurtzeko. Egiturari ez dio eragiten.', solution: 'BD ESKUDUNA', strategy: ['**Eskuduntza Nagusia:** BD da **Egokitzapen Funtzionala** diseinatzeko eta erabilera berrirako (bulegoa/etxebizitza) EKTren (DB-HS/SUA) betetzea bermatzeko teknikari egokiena.', '**Bigarren Mailako Hirigintza Muga:** Erabilera aldaketak bateragarritasunaren berrespena eskatzen du plangintzan, baina egokitzapen obra **Eraikuntza Gutxiko Entitatea** da eta BDren ardurapean dago.', '**Defentsa Gakoa:** **Arau Hierarkia** erabiltzea Udal Ordenantzak Arkitektoa/Ingeniaria eska ez dezan, LOEan oinarriturik ez badago.']}},
+                { id: 'F', es: { title: 'F. División Comercial (Local en Dos Tiendas)', summary: 'Segregación de un gran local comercial en dos unidades independientes (dos tiendas) con aperturas de puertas y nuevos aseos.', solution: 'ID COMPETENTE', strategy: ['**Naturaleza de la Obra:** La obra es una **Adecuación Funcional** y una **Modificación NO Esencial** de la distribución interna. No hay Obra Mayor.', '**Instalaciones:** La duplicación de los cuartos húmedos y sub-contadores es competencia del DI.', '**Defensa:** El DI firma y proyecta la distribución, la evacuación (DB-SI) y la accesibilidad (DB-SUA) de las dos nuevas unidades comerciales.']}, eu: { title: 'F. Merkataritza Zatiketa (Lokal Bat Bi Dendatan)', summary: 'Merkataritza-lokal handi bat bi unitate independentetan (bi denda) bereiztea, ate irekiera eta komun berriekin.', solution: 'BD ESKUDUNA', strategy: ['**Obraren Izaera:** Obra **Egokitzapen Funtzionala** eta barne banaketaren **Ezinbestekoa EZ den Aldaketa** da. Ez dago Obra Nagusirik.', '**Instalazioak:** Gela hezeak eta azpi-kontagailuak bikoiztea BDren eskuduntza da.', '**Defentsa:** BDk sinatzen eta proiektatzen ditu bi merkataritza-unitate berrien banaketa, ebakuazioa (DB-SI) eta irisgarritasuna (DB-SUA).']}},
+                { id: 'G', es: { title: 'G. Apertura de Vanos en Forjado (Línea Roja Estructural)', summary: 'Abrir un vano de 1.5 x 1.5 metros en el forjado entre dos plantas para instalar una escalera interior de diseño.', solution: 'COLABORACIÓN NECESARIA', strategy: ['**LÍNEA ROJA INELUDIBLE:** Cualquier apertura en un forjado, muro de carga, pilar o viga afecta directamente al **Conjunto Sistema Estructural** del edificio.', '**Competencia:** Se requiere obligatoriamente la firma y cálculo de un **Arquitecto o Ingeniero** para el cálculo de la estructura auxiliar (viga de reparto) y la validación de la estabilidad global.', '**Estrategia DI:** El DI diseña la escalera, pero la parte de ejecución de la abertura del forjado debe ser dirigida y firmada por el técnico superior.']}, eu: { title: 'G. Forjaduko Baoen Irekiera (Egiturazko Marra Gorria)', summary: '1.5 x 1.5 metroko bao bat irekitzea bi solairuen arteko forjaduan barneko eskailera diseinatu bat instalatzeko.', solution: 'NAHITAEZKO LANKIDETZA', strategy: ['**EZINBESTEKO MARRA GORRIA:** Forjatu, karga-horma, zutabe edo habetan egindako edozein irekierak zuzenean eragiten dio eraikinaren **Egitura Sistema Osoari**.', '**Eskuduntza:** Nahitaezkoa da **Arkitekto edo Ingeniari** baten sinadura eta kalkulua egitura osagarriaren (banaketa-habearen) kalkulua egiteko eta egonkortasun globala baliozkotzeko.', '**BD Estrategia:** BDk eskailera diseinatzen du, baina forjatuaren irekiera egiteko zatia goi mailako teknikari batek zuzendu eta sinatu behar du.']}},
+                // NEW SCENARIO H
+                { id: 'H', es: { title: 'H. Ampliación de Vivienda Unifamiliar (Nueva Cimentación)', summary: 'Se propone una ampliación en la fachada principal de una vivienda unifamiliar, incluyendo la construcción de una nueva losa de cimentación y un muro de carga para soportar el nuevo volumen.', solution: 'COLABORACIÓN NECESARIA', strategy: ['**Obra Mayor / Alteración del Conjunto Sistema Estructural:** Es un caso claro de Obra Mayor ya que implica la ejecución de la cimentación (Obra Nueva), la alteración del sistema estructural existente (transferencia de carga a nueva cimentación/muro), y la modificación de la envolvente. Se requiere obligatoriamente la firma de un **Arquitecto** o técnico superior. El DI puede diseñar el acabado interior y la distribución de la ampliación, pero el proyecto estructural troncal debe ser liderado por un técnico superior.']}, eu: { title: 'H. Familia Bakarreko Etxebizitzaren Luzapena (Oinarri Berria)', summary: 'Familia bakarreko etxebizitzaren fatxada nagusian luzapen bat proposatzen da, oinarri-lauza berri baten eraikuntza eta bolumen berriari eusteko karga-horma bat barne.', solution: 'NAHITAEZKO LANKIDETZA', strategy: ['**Obra Nagusia / Egitura Sistema Osoaren Aldaketa:** Obra Nagusiko kasu argia da, oinarria exekutatzea (Obra Berria), egitura-sistema aldatzea (karga-transferentzia oinarri/horma berrira) eta ingurunearen aldaketa dakarrelako. Nahitaezkoa da **Arkitekto** edo goi mailako teknikari baten sinadura. BDk luzapenaren barne-akabera eta banaketa diseina ditzake, baina egiturazko oinarrizko proiektua goi mailako teknikari batek gidatu behar du.']}}
+            ],
+            concepts: [
+                { id: 'C1', es: { text: 'Escasa Entidad Constructiva', hint: 'La obra es pequeña y simple.' }, eu: { text: 'Eraikuntza Gutxiko Entitatea', hint: 'Obra txikia eta sinplea da.' }, type: 'DEFENSA' },
+                { id: 'C2', es: { text: 'Sencillez Técnica', hint: 'No requiere cálculo estructural complejo.' }, eu: { text: 'Sinpletasun Teknikoa', hint: 'Ez du kalkulu estruktural konplexurik behar.' }, type: 'DEFENSA' },
+                { id: 'C3', es: { text: 'Jerarquía Normativa (Ultra Vires)', hint: 'Mi título es superior a la OOMM.' }, eu: { text: 'Arau Hierarkia (Ultra Vires)', hint: 'Nire titulua udal ordenantza (OOMM) baino goragokoa da.' }, type: 'DEFENSA' },
+                { id: 'C4', es: { text: 'Modificación NO Esencial', hint: 'Solo cambio la distribución interna, no la forma global.' }, eu: { text: 'Ezinbestekoa EZ den Aldaketa', hint: 'Barne banaketa bakarrik aldatzen dut, ez forma globala.' }, type: 'DEFENSA' },
+                { id: 'C5', es: { text: 'Alteración del Volumen', hint: 'Aumenta la edificabilidad o superficie construida.' }, eu: { text: 'Bolumenaren Aldaketa', hint: 'Eraikigarritasuna edo eraikitako azalera handitzen du.' }, type: 'LIMITE' },
+                { id: 'C6', es: { text: 'Alteración del Conjunto Sistema Estructural', hint: 'Tocar o perforar un muro de carga o viga.' }, eu: { text: 'Egitura Sistema Osoaren Aldaketa', hint: 'Karga-horma edo habe bat ukitzea edo zulatzea.' }, type: 'LIMITE' },
+                { id: 'C7', es: { text: 'Instalaciones de Recinto (Duplicación de Contadores)', hint: 'Instalaciones internas sin afectar acometida general.' }, eu: { text: 'Esparruko Instalazioak (Kontagailuak Bikoiztea)', hint: 'Barneko instalazioak, hartune nagusiari eragin gabe.' }, type: 'DEFENSA' },
+                { id: 'C8', es: { text: 'Garantía de Habitabilidad (DB-HS/SUA)', hint: 'Soy especialista en la garantía de los mínimos de habitabilidad interior.' }, eu: { text: 'Bizigarritasunaren Bermea (DB-HS/SUA)', hint: 'Barne bizigarritasun minimoen bermean espezialista naiz.' }, type: 'DEFENSA' },
+                { id: 'C9', es: { text: 'Obra Mayor / Rehabilitación Integral', hint: 'Implica la sustitución global del edificio.' }, eu: { text: 'Obra Nagusia / Erabateko Birgaitzea', hint: 'Eraikinaren ordezkapen globala dakar.' }, type: 'LIMITE' },
+                { id: 'C10', es: { text: 'Instalaciones Fijas Complejas (Climatización Centralizada)', hint: 'Instalaciones de gran envergadura o cálculo industrial.' }, eu: { text: 'Instalazio Finko Konplexuak (Klima Zentralizatua)', hint: 'Tamaina handiko instalazioak edo kalkulu industriala.' }, type: 'LIMITE' }
+            ],
+            translations: { /* ... (Traducciones completas) ... */
+                es: {
+                    appTitle: 'LOE Challenge: La Viabilidad de la DI',
+                    appSubtitle: 'Pon a prueba tus competencias en la Mesa de Revisión Municipal.',
+                    loginTitle: 'Acceso a la Plataforma',
+                    loginHint: 'Introduce tu DNI, número de matrícula o nombre. Si eres docente, introduce la clave especial para acceder al Panel de Control.',
+                    loginButton: 'Acceder',
+                    selectScenarioTitle: '1. Selecciona el Escenario',
+                    activeScenario: 'Escenario Activo',
+                    mountDefenseTitle: '2. Monta tu Defensa (Arrastra y Suelta)',
+                    conceptCardsTitle: 'Cartas de Concepto LOE',
+                    defenseZoneTitle: 'Zona de Defensa de la DI',
+                    defenseZoneHint: 'Arrastra aquí los 2 o 3 conceptos que justifican la competencia de la Diseñadora de Interiores.',
+                    limitZoneTitle: 'Límites y Ataques del Ayuntamiento',
+                    limitZoneHint: 'Arrastra aquí los conceptos que podrían invalidar o limitar la competencia.',
+                    checkButtonText: 'Verificar Viabilidad Competencial',
+                    solutionTitle: 'Justificación Legal y Estrategia:',
+                    newChallengeButton: 'Nuevo Desafío',
+                    correctTitle: '¡Decisión Correcta!',
+                    correctMessage: (solution) => `<p class="text-green-700">Has acertado la viabilidad. El proyecto se enmarca dentro de la **${solution}**.</p>`,
+                    incorrectTitle: '¡Decisión Incorrecta!',
+                    incorrectMessage: (solution) => `<p class="text-red-700">La viabilidad correcta es **${solution}**. Revisa dónde se encuentra el verdadero límite del proyecto: **La LÍNEA ROJA**.</p>`,
+                    idCompetente: 'DI COMPETENTE',
+                    colaboracionNecesaria: 'COLABORACIÓN NECESARIA',
+                    teacherDashboardTitle: 'Panel de Control del Docente',
+                    teacherDashboardSubtitle: 'Progreso de los desafíos de competencias de todos los estudiantes.',
+                    updateProgressButton: 'Actualizar Progreso',
+                    studentIdLabel: 'Estudiante ID',
+                    totalCorrectLabel: 'Total Correcto',
+                    logoutButton: 'Cerrar Sesión'
+                },
+                eu: {
+                    appTitle: 'LOE Challenge: BDren Bideragarritasuna',
+                    appSubtitle: 'Probatu zure eskuduntzak Udal Berrikuspen Mahaian.',
+                    loginTitle: 'Plataformarako Sarbidea',
+                    loginHint: 'Sartu zure NANa, matrikula-zenbakia, edo izena progresioari hasiera emateko.',
+                    loginButton: 'Sartu',
+                    selectScenarioTitle: '1. Agertokia Aukeratu',
+                    activeScenario: 'Agertoki Aktiboa',
+                    mountDefenseTitle: '2. Zure Defentsa Muntatu (Arrastatu eta Askatu)',
+                    conceptCardsTitle: 'LOE Kontzeptu Txartelak',
+                    defenseZoneTitle: 'BDren Defentsa Eremua',
+                    defenseZoneHint: 'Arrastatu hona Barnealdeen Diseinatzailearen eskuduntza justifikatzen duten 2 edo 3 kontzeptuak.',
+                    limitZoneTitle: 'Udalaren Mugak eta Erasoak',
+                    limitZoneHint: 'Arrastatu hona eskuduntza baliogabetu edo muga dezaketen kontzeptuak.',
+                    checkButtonText: 'Eskuduntza Bideragarritasuna Egiaztatu',
+                    solutionTitle: 'Lege Justifikazioa eta Estrategia:',
+                    newChallengeButton: 'Erronka Berria',
+                    correctTitle: 'Erabaki Zuzena!',
+                    correctMessage: (solution) => `<p class="text-green-700">Bideragarritasuna asmatu duzu. Proiektua **${solution}** barruan kokatzen da.</p>`,
+                    incorrectTitle: 'Erabaki Okerra!',
+                    incorrectMessage: (solution) => `<p class="text-red-700">Bideragarritasun zuzena **${solution}** da. Revisa dónde se encuentra el verdadero límite del proyecto: **MARRA GORRIA**.</p>`,
+                    idCompetente: 'BD ESKUDUNA',
+                    colaboracionNecesaria: 'NAHITAEZKO LANKIDETZA',
+                    teacherDashboardTitle: 'Irakaslearen Kontrol-panela',
+                    teacherDashboardSubtitle: 'Ikasle guztien eskuduntza-erronken progresioa.',
+                    updateProgressButton: 'Progresioa Eguneratu',
+                    studentIdLabel: 'Ikasle IDa',
+                    totalCorrectLabel: 'Total Zuzena',
+                    logoutButton: 'Saioa Amaitu'
+                }
+            }
+        };
+
+        const originalConcepts = rawData.concepts;
+        const defenseZone = document.getElementById('defense-zone');
+        const limitZone = document.getElementById('limit-zone');
+        const conceptCardsContainer = document.getElementById('concept-cards');
+        const checkButton = document.getElementById('check-button');
+        const resultFeedback = document.getElementById('result-feedback');
+        const gameArea = document.getElementById('game-area');
+        const scenarioButtonsContainer = document.getElementById('scenario-buttons');
+        const currentScenarioDisplay = document.getElementById('current-scenario-display');
+        const strategyList = document.getElementById('strategy-list');
+        
+        // --- TRANSLATION AND UI FUNCTIONS (Exposed globally) ---
+        
+        window.translateElement = function (key) {
+            const translation = rawData.translations[window.currentLang][key];
+            if (typeof translation === 'function') {
+                return translation;
+            }
+            return translation || key;
+        }
+
+        window.updateTexts = function () {
+            document.querySelectorAll('[data-translate]').forEach(el => {
+                const key = el.dataset.translate;
+                el.textContent = window.translateElement(key);
+            });
+
+            // Update Dashboard/Login texts
+            document.getElementById('teacher-dashboard-title').textContent = window.translateElement('teacherDashboardTitle');
+            document.getElementById('teacher-dashboard-subtitle').textContent = window.translateElement('teacherDashboardSubtitle');
+            document.getElementById('update-progress-button').textContent = window.translateElement('updateProgressButton');
+            document.getElementById('student-id-header').textContent = window.translateElement('studentIdLabel');
+            document.getElementById('total-correct-header').textContent = window.translateElement('totalCorrectLabel');
+            
+            if (window.currentLang) {
+                window.renderScenarioButtons(window.firebase.progress); 
+                window.renderConceptCards();
+            }
+            if (window.currentScenario) {
+                document.getElementById('scenario-title').textContent = window.currentScenario[window.currentLang].title;
+                document.getElementById('scenario-description').textContent = window.currentScenario[window.currentLang].summary;
+            }
+            
+            // Update input placeholders
+            const inputEU = document.getElementById('user-id-input');
+            const inputES = document.getElementById('user-id-input-es');
+            const placeholderText = window.currentLang === 'eu' ? 'Sartu hemen zure IDa (Irakaslea ere bada)' : 'Introduce aquí tu ID (también Profesor)';
+            if(inputEU) inputEU.placeholder = placeholderText;
+            if(inputES) inputES.placeholder = placeholderText;
+            
+            // Update drop zone titles
+            if (!gameArea.classList.contains('hidden')) {
+                defenseZone.querySelector('h3').textContent = window.translateElement('defenseZoneTitle');
+                defenseZone.querySelector('p').textContent = window.translateElement('defenseZoneHint');
+                limitZone.querySelector('h3').textContent = window.translateElement('limitZoneTitle');
+                limitZone.querySelector('p').textContent = window.translateElement('limitZoneHint');
+            }
+        }
+
+        window.showLoginForm = function(lang) {
+            const euForm = document.getElementById('login-form-eu');
+            const esForm = document.getElementById('login-form-es');
+            if (lang === 'eu') {
+                euForm.classList.remove('hidden');
+                esForm.classList.add('hidden');
+            } else {
+                euForm.classList.add('hidden');
+                esForm.classList.remove('hidden');
+            }
+        }
+
+        // --- DRAG AND DROP & RENDERING FUNCTIONS (Exposed globally) ---
+        
+        function handleDragStart(e) {
+            e.dataTransfer.setData('text/plain', e.target.dataset.id);
+            setTimeout(() => e.target.classList.add('opacity-50'), 0);
+        }
+
+        function handleDragEnd(e) {
+            e.target.classList.remove('opacity-50');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('active');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('active');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('active');
+            const data = e.dataTransfer.getData('text/plain');
+            const draggedElement = document.querySelector(`[data-id="${data}"]`);
+
+            if (draggedElement) {
+                e.currentTarget.appendChild(draggedElement);
+                draggedElement.classList.remove('defense-card', 'limit-card', 'bg-blue-50', 'bg-red-50', 'bg-white');
+                
+                if (e.currentTarget.id === 'defense-zone') {
+                    draggedElement.classList.add('defense-card', 'bg-blue-50');
+                } else if (e.currentTarget.id === 'limit-zone') {
+                    draggedElement.classList.add('limit-card', 'bg-red-50');
+                } else if (e.currentTarget.id === 'concept-cards') {
+                    draggedElement.classList.add('bg-white');
+                }
+            }
+            window.updateCheckButton();
+        }
+        
+        function createCardElement(concept) {
+            const card = document.createElement('div');
+            card.className = `card text-xs p-2 rounded-lg shadow-md font-semibold m-1 bg-white border border-gray-200`;
+            card.textContent = concept[window.currentLang].text;
+            card.setAttribute('draggable', true);
+            card.dataset.id = concept.id;
+            card.dataset.type = concept.type;
+            card.title = concept[window.currentLang].hint;
+            
+            // Touch/Drag events
+            // In a single file, adding all events here is the most robust way.
+            card.addEventListener('dragstart', handleDragStart);
+            card.addEventListener('dragend', handleDragEnd);
+
+            // Basic touch for moving/dropping (simplified for Moodle context)
+            card.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                // Simple implementation: move the card back to the source container if dropped outside
+                // Advanced drag/drop on touch is complex and often fails in IFrames/Moodle
+                // For simplicity, we rely on the standard drag API or a simple click-to-move mechanism if drag fails.
+            });
+            return card;
+        }
+
+        window.renderConceptCards = function () {
+            conceptCardsContainer.innerHTML = '';
+            originalConcepts.forEach(concept => {
+                conceptCardsContainer.appendChild(createCardElement(concept));
+            });
+        }
+
+        window.renderScenarioButtons = function (progress = {}) {
+            scenarioButtonsContainer.innerHTML = '';
+            rawData.scenarios.forEach((scenario) => {
+                const button = document.createElement('button');
+                let buttonClass = 'bg-blue-600 hover:bg-blue-700';
+                let statusText = '';
+                
+                const scenarioProgress = progress[scenario.id];
+
+                if (scenarioProgress) {
+                    if (scenarioProgress.correct) {
+                        buttonClass = 'scenario-solved-correct hover:bg-green-700';
+                        statusText = window.currentLang === 'eu' ? '<span class="text-sm font-light italic block mt-1">ASMATUA</span>' : '<span class="text-sm font-light italic block mt-1">CORRECTO</span>';
+                    } else {
+                        buttonClass = 'scenario-solved-incorrect hover:bg-red-700';
+                        statusText = window.currentLang === 'eu' ? '<span class="text-sm font-light italic block mt-1">OKERRA</span>' : '<span class="text-sm font-light italic block mt-1">INCORRECTO</span>';
+                    }
+                }
+
+                button.className = `${buttonClass} text-white font-bold py-3 px-4 rounded-xl shadow-lg hover:shadow-xl transition duration-150 transform hover:scale-105 text-left`;
+                button.innerHTML = `
+                    <span class="text-lg block">${scenario[window.currentLang].title}</span>
+                    <span class="text-xs opacity-80">${scenario[window.currentLang].summary}</span>
+                    ${statusText}
+                `;
+                button.onclick = () => window.selectScenario(scenario);
+                scenarioButtonsContainer.appendChild(button);
+            });
+        }
+        
+        window.renderDashboardTable = function (scores) {
+            const body = document.getElementById('dashboard-table-body');
+            body.innerHTML = '';
+            
+            if (scores.length === 0) {
+                 body.innerHTML = `<tr><td colspan="10" class="p-4 text-center text-gray-600">Oraindik ez dago ikasleen progresiorik erregistratuta. / Aún no hay progreso registrado.</td></tr>`;
+                 return;
+            }
+            
+            scores.sort((a, b) => b.correctCount - a.correctCount);
+            
+            scores.forEach(scoreData => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-t hover:bg-gray-50';
+                
+                let scenarioCells = '';
+                // Itera sobre todos los escenarios ('A' a 'H') - 8 escenarios
+                ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'].forEach(scenarioId => {
+                    const result = scoreData.scores[scenarioId];
+                    let cellClass = 'p-3 text-center';
+                    let status = '—';
+                    
+                    if (result) {
+                        if (result.correct) {
+                            cellClass += ' bg-green-100 text-green-700 font-bold';
+                            status = 'Zuzena (1)'; // Only show status in Basque for dashboard cells
+                        } else {
+                            cellClass += ' bg-red-100 text-red-700';
+                            status = 'Okerra (0)';
+                        }
+                    }
+                    scenarioCells += `<td class="${cellClass}">${status}</td>`;
+                });
+                
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-gray-800">${scoreData.studentId}</td>
+                    ${scenarioCells}
+                    <td class="p-3 text-center bg-purple-200 font-extrabold text-lg">${scoreData.correctCount} / 8</td>
+                `;
+                body.appendChild(tr);
+            });
+        }
+
+        // --- GAME LOGIC (Exposed globally) ---
+
+        window.selectScenario = function (scenario) {
+            if (window.firebase.role !== 'STUDENT') return;
+            window.currentScenario = scenario;
+            
+            scenarioButtonsContainer.classList.add('hidden');
+            
+            document.getElementById('scenario-title').textContent = scenario[window.currentLang].title;
+            document.getElementById('scenario-description').textContent = scenario[window.currentLang].summary;
+            currentScenarioDisplay.classList.remove('hidden');
+
+            gameArea.classList.remove('hidden');
+            
+            window.resetGameArea();
+            window.renderConceptCards();
+            window.updateCheckButton();
+        }
+
+        window.updateCheckButton = function () {
+            const defenseCards = defenseZone.querySelectorAll('.card').length;
+            const limitCards = limitZone.querySelectorAll('.card').length;
+            checkButton.disabled = (defenseCards + limitCards) === 0;
+            
+            checkButton.textContent = window.translateElement('checkButtonText');
+        }
+
+        window.checkSolution = function () {
+            const defenseCardIds = Array.from(defenseZone.querySelectorAll('.card')).map(card => card.dataset.id);
+            const limitCardIds = Array.from(limitZone.querySelectorAll('.card')).map(card => card.dataset.id);
+            
+            let isCorrect = false;
+            let feedbackTitle = '';
+            let feedbackMessage = '';
+            
+            const originalSolution = window.currentScenario.es.solution;
+
+            let hasStrongLimitInAttack = limitCardIds.some(id => ['C5', 'C6', 'C9', 'C10'].includes(id));
+            let hasStrongLimitInDefense = defenseCardIds.some(id => ['C5', 'C6', 'C9', 'C10'].includes(id));
+            
+            if (originalSolution === 'COLABORACIÓN NECESARIA') {
+                // Correct when a strong limit is identified (either in defense or limit zone)
+                isCorrect = hasStrongLimitInAttack || hasStrongLimitInDefense;
+            } 
+            else if (originalSolution === 'ID COMPETENTE') {
+                // Correct when no strong limits are identified in any zone, AND at least 2 cards are used
+                if (!hasStrongLimitInAttack && !hasStrongLimitInDefense) {
+                    isCorrect = defenseCardIds.length >= 2 || defenseCardIds.length > 0; // Check if user has used defense concepts
+                } else {
+                    isCorrect = false; 
+                }
+            }
+
+            if (window.saveScenarioResult) {
+                window.saveScenarioResult(window.currentScenario.id, isCorrect);
+            }
+
+            if (isCorrect) {
+                feedbackTitle = window.translateElement('correctTitle');
+                const solutionText = window.translateElement(originalSolution === 'ID COMPETENTE' ? 'idCompetente' : 'colaboracionNecesaria');
+                feedbackMessage = window.translateElement('correctMessage')(solutionText);
+                document.getElementById('result-feedback').classList.add('bg-green-100');
+                document.getElementById('result-title').classList.add('text-green-800');
+            } else {
+                feedbackTitle = window.translateElement('incorrectTitle');
+                const solutionText = window.translateElement(originalSolution === 'ID COMPETENTE' ? 'idCompetente' : 'colaboracionNecesaria');
+                feedbackMessage = window.translateElement('incorrectMessage')(solutionText);
+                document.getElementById('result-feedback').classList.add('bg-red-100');
+                document.getElementById('result-title').classList.add('text-red-800');
+            }
+            
+            strategyList.innerHTML = '';
+            window.currentScenario[window.currentLang].strategy.forEach(point => {
+                const li = document.createElement('li');
+                li.innerHTML = point;
+                strategyList.appendChild(li);
+            });
+
+            document.getElementById('result-title').textContent = feedbackTitle;
+            document.getElementById('result-message').innerHTML = feedbackMessage;
+            
+            gameArea.classList.add('hidden');
+            resultFeedback.classList.remove('hidden');
+        }
+
+        window.resetGameArea = function () {
+            const allCards = Array.from(document.querySelectorAll('.card'));
+            allCards.forEach(card => {
+                conceptCardsContainer.appendChild(card);
+                card.classList.remove('defense-card', 'limit-card', 'bg-blue-50', 'bg-red-50');
+                card.classList.add('bg-white');
+            });
+            
+            defenseZone.innerHTML = `<h3 class="text-xl font-semibold text-blue-700 mb-3" data-translate="defenseZoneTitle">${window.translateElement('defenseZoneTitle')}</h3><p class="text-gray-500 text-sm" data-translate="defenseZoneHint">${window.translateElement('defenseZoneHint')}</p>`;
+            limitZone.innerHTML = `<h3 class="text-xl font-semibold text-red-700 mb-3" data-translate="limitZoneTitle">${window.translateElement('limitZoneTitle')}</h3><p class="text-gray-500 text-sm" data-translate="limitZoneHint">${window.translateElement('limitZoneHint')}</p>`;
+        }
+
+        window.resetGame = async function () {
+            window.currentScenario = null;
+            resultFeedback.classList.add('hidden');
+            document.getElementById('result-feedback').classList.remove('bg-green-100', 'bg-red-100');
+            document.getElementById('result-title').classList.remove('text-green-800', 'text-red-800');
+            currentScenarioDisplay.classList.add('hidden');
+            scenarioButtonsContainer.classList.remove('hidden');
+            gameArea.classList.add('hidden');
+            
+            await window.loadUserProgress(window.firebase.studentId); 
+            window.renderScenarioButtons(window.firebase.progress);
+
+            window.resetGameArea();
+        }
+
+        window.startAppFlow = async function (role, studentId, lang) {
+            window.firebase.role = role;
+            window.firebase.studentId = studentId;
+            window.currentLang = lang;
+            
+            // Ocultar Auth Area de forma segura
+            document.getElementById('auth-area')?.classList.add('hidden'); 
+
+            // Actualizar ID del estudiante y mostrar barra de información
+            const studentIdDisplay = document.getElementById('student-id-display');
+            if (studentIdDisplay) { // Seguridad: Asegurar que el elemento existe
+                studentIdDisplay.textContent = studentId;
+            }
+            document.getElementById('user-info-bar')?.classList.remove('hidden');
+            
+            if (role === 'TEACHER') {
+                // Actualizar ID del profesor de forma segura
+                const teacherIdDisplay = document.getElementById('teacher-id-display');
+                if (teacherIdDisplay) { // Seguridad: Asegurar que el elemento existe
+                    teacherIdDisplay.textContent = studentId;
+                }
+                
+                document.getElementById('dashboard-area')?.classList.remove('hidden');
+                window.updateTexts();
+                await window.loadAllStudentProgress();
+            } else { // STUDENT
+                document.getElementById('game-main-content')?.classList.remove('hidden');
+                document.getElementById('scenario-selection')?.classList.remove('hidden');
+                window.updateTexts();
+                await window.loadUserProgress(studentId);
+            }
+        }
+
+        window.handleLogin = function (lang) {
+            // Get value from the active input field
+            const idInputEU = document.getElementById('user-id-input');
+            const idInputES = document.getElementById('user-id-input-es');
+            const studentId = (lang === 'eu' ? idInputEU.value : idInputES.value).trim().toUpperCase();
+            
+            if (!studentId) {
+                document.getElementById('auth-message-eu').textContent = "Mesedez, sartu identifikadore bat.";
+                document.getElementById('auth-message-es').textContent = "Por favor, introduce un identificador.";
+                return;
+            }
+            
+            document.getElementById('auth-message-eu').textContent = "";
+            document.getElementById('auth-message-es').textContent = "";
+            
+            if (studentId === TEACHER_KEY) {
+                window.startAppFlow('TEACHER', studentId, lang);
+            } else {
+                window.startAppFlow('STUDENT', studentId, lang);
+            }
+        };
+
+
+        // --- EVENT LISTENERS E INICIALIZACIÓN ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sincronizar el valor del input entre los dos formularios
+            document.getElementById('user-id-input').addEventListener('input', (e) => {
+                document.getElementById('user-id-input-es').value = e.target.value;
+            });
+            document.getElementById('user-id-input-es').addEventListener('input', (e) => {
+                document.getElementById('user-id-input').value = e.target.value;
+            });
+
+            // Handle enter key press on login inputs
+            function handleEnter(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    window.handleLogin(window.currentLang);
+                }
+            }
+            document.getElementById('user-id-input')?.addEventListener('keypress', handleEnter);
+            document.getElementById('user-id-input-es')?.addEventListener('keypress', handleEnter);
+
+            [defenseZone, limitZone, conceptCardsContainer].forEach(zone => {
+                zone?.addEventListener('dragover', handleDragOver);
+                zone?.addEventListener('dragleave', handleDragLeave);
+                zone?.addEventListener('drop', handleDrop);
+            });
+
+            checkButton?.addEventListener('click', window.checkSolution);
+            
+            // 1. Initialize Firebase
+            setupFirebaseAndAuth();
+            
+            // 2. Wait for Firebase to be ready before showing auth screen
+            window.addEventListener('firebaseReady', () => {
+                 document.getElementById('auth-area')?.classList.remove('hidden');
+                 window.updateTexts();
+                 window.showLoginForm(window.currentLang); // Ensure the correct form is visible initially
+            });
+        });
+
+    </script>
+</body>
+</html>
