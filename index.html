@@ -855,5 +855,33 @@
         window.showLoginForm('eu');
 
     </script>
+    <!-- 🚀 Inicialización de Firebase -->
+<script type="module">
+  // Importar librerías desde el CDN de Firebase
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // 🔑 Configuración de tu proyecto (cópiala de Firebase Console)
+  const firebaseConfig = {
+apiKey: "AIzaSyB5jzbVWMiEzUPB2aTWfF6BbE-cf7aKvRE",
+  authDomain: "nire-github-proiektua.firebaseapp.com",
+  projectId: "nire-github-proiektua",
+  storageBucket: "nire-github-proiektua.firebasestorage.app",
+  messagingSenderId: "961383451425",
+  appId: "1:961383451425:web:9be68f06509f5f97d2cc60",
+  measurementId: "G-MT9P9C2MMB"
+  };
+
+  // Inicializar Firebase
+  const app = initializeApp(firebaseConfig);
+
+  // Ejemplo: inicializar Firestore y Auth
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  console.log("✅ Firebase inicializado correctamente", app);
+</script>
+
 </body>
 </html>
