@@ -49,6 +49,10 @@
             background-color: #dc2626 !important; /* Tailwind red-600 */
             border: 3px solid #f87171; /* Tailwind red-400 */
         }
+        .scenario-solved-partial {
+  background-color: #d97706 !important; /* Tailwind yellow-600 */
+  border: 3px solid #f59e0b; /* Tailwind yellow-500 */
+}
         /* Custom scrollbar for better look */
         .card-container {
             max-height: 400px; /* Limit height for scroll */
@@ -414,30 +418,65 @@ window.firebase = {
                 console.error("Error loading progress:", error);
             }
         };
+// --- PUNTUAKETA SISTEMA BERRIA ---
+function calculateScore(attempts) {
+  if (!attempts || attempts.length === 0) return 0;
+  
+  const firstAttempt = attempts[0];
+  const secondAttempt = attempts[1];
+  
+  // Lehen saiakeran zuzena bada → 3 puntu
+  if (firstAttempt && firstAttempt.correct) {
+    return 3;
+  }
+  
+  // Bigarren saiakeran zuzena bada → 1 puntu
+  if (secondAttempt && secondAttempt.correct) {
+    return 1;
+  }
+  
+  // Bestela → 0 puntu
+  return 0;
+}
+// --- PUNTUAKETA SISTEMA BERRIA AMAITU ---
+        
+window.saveScenarioResult = async (scenarioId, isCorrect) => {
+  const { db, studentId, progress } = window.firebase;
+  if (!db || !studentId) {
+    console.error("User ID not set. Cannot save score.");
+    return;
+  }
 
-        window.saveScenarioResult = async (scenarioId, isCorrect) => {
-            const { db, studentId, progress } = window.firebase;
-            if (!db || !studentId) {
-                console.error("User ID not set. Cannot save score.");
-                return;
-            }
+  const timestamp = new Date().toISOString();
+  
+  // Saiakera berria gehitzea
+  if (!progress[scenarioId]) {
+    progress[scenarioId] = { attempts: [] };
+  }
+  
+  progress[scenarioId].attempts.push({ 
+    correct: isCorrect, 
+    timestamp: timestamp 
+  });
+  
+  // Saiakera kopurua mugatzea (max 3)
+  if (progress[scenarioId].attempts.length > 3) {
+    progress[scenarioId].attempts = progress[scenarioId].attempts.slice(-3);
+  }
 
-            const timestamp = new Date().toISOString();
-            progress[scenarioId] = { correct: isCorrect, timestamp: timestamp };
-            
-            const progressRef = getScoreRef(studentId);
-            
-            try {
-                await setDoc(progressRef, { 
-                    studentId: studentId,
-                    lastUpdated: timestamp,
-                    scores: progress 
-                }, { merge: true });
-                console.log(`Scenario ${scenarioId} saved successfully for ${studentId}.`);
-            } catch (error) {
-                console.error("Error saving score:", error);
-            }
-        };
+  const progressRef = getScoreRef(studentId);
+  
+  try {
+    await setDoc(progressRef, {
+      studentId: studentId,
+      lastUpdated: timestamp,
+      scores: progress
+    }, { merge: true });
+    console.log(`Scenario ${scenarioId} saved successfully for ${studentId}.`);
+  } catch (error) {
+    console.error("Error saving score:", error);
+  }
+};
         
         window.loadAllStudentProgress = async () => {
             const { db, appId } = window.firebase;
@@ -462,12 +501,13 @@ window.firebase = {
 
                     const scores = data.scores || {};
                     
-                    let correctCount = 0;
-                    Object.keys(scores).forEach(scenarioId => {
-                        if (scores[scenarioId] && scores[scenarioId].correct) {
-                            correctCount++;
-                        }
-                    });
+let correctCount = 0;
+Object.keys(scores).forEach(scenarioId => {
+  const scenarioData = scores[scenarioId];
+  if (scenarioData && scenarioData.attempts) {
+    correctCount += calculateScore(scenarioData.attempts);
+  }
+});
 
                     allScores.push({ studentId, scores, correctCount });
                 });
@@ -480,13 +520,52 @@ window.firebase = {
                     return a.studentId.localeCompare(b.studentId);
                 });
 
-                window.renderDashboardTable(allScores);
+             window.renderDashboardTable = (allScores) => {
+  const body = document.getElementById('dashboard-table-body');
+  body.innerHTML = '';
 
-            } catch (error) {
-                console.error("Error loading all student progress:", error);
-                document.getElementById('dashboard-table-body').innerHTML = `<tr><td colspan="10" class="p-4 text-center text-red-600">Errorea datuak kargatzean. / Error al cargar los datos.</td></tr>`;
-            }
-        };
+  const scenarioIds = rawData.scenarios.map(s => s.id);
+
+  allScores.forEach(data => {
+    let row = `<tr class="hover:bg-gray-50">
+      <td class="p-3 font-semibold text-gray-800 text-left">${data.studentId}</td>`;
+
+    let totalScore = 0;
+    
+    scenarioIds.forEach(id => {
+      const scoreData = data.scores[id];
+      let cellClass = 'bg-gray-200';
+      let content = '-';
+      let points = 0;
+
+      if (scoreData && scoreData.attempts) {
+        points = calculateScore(scoreData.attempts);
+        totalScore += points;
+        
+        if (points === 3) {
+          cellClass = 'bg-green-100 text-green-700 font-bold';
+          content = '3★';
+        } else if (points === 1) {
+          cellClass = 'bg-yellow-100 text-yellow-700 font-bold';
+          content = '1★';
+        } else if (scoreData.attempts.length > 0) {
+          cellClass = 'bg-red-100 text-red-700 font-bold';
+          content = '0';
+        }
+      }
+
+      row += `<td class="p-3 text-center ${cellClass}">${content}</td>`;
+    });
+
+    row += `<td class="p-3 text-center text-lg font-extrabold bg-purple-100 text-purple-800">${totalScore}</td>`;
+    row += '</tr>';
+    body.innerHTML += row;
+  });
+
+  if (allScores.length === 0) {
+    body.innerHTML = '<tr><td colspan="10" class="p-4 text-center text-gray-500">Ez dago daturik / No hay datos</td></tr>';
+  }
+};
 
         // --- GAME LOGIC FUNCTIONS ---
 
@@ -583,37 +662,40 @@ window.firebase = {
         };
 
 
-        window.renderScenarioButtons = (progress) => {
-            const container = document.getElementById('scenario-buttons');
-            container.innerHTML = '';
-            const lang = window.currentLang;
+window.renderScenarioButtons = (progress) => {
+  const container = document.getElementById('scenario-buttons');
+  container.innerHTML = '';
+  const lang = window.currentLang;
 
-            rawData.scenarios.forEach(scenario => {
-                const isSolved = progress[scenario.id];
-                let btnClass = 'bg-blue-600 hover:bg-blue-700';
-                let statusText = '';
-                
-                if (isSolved) {
-                    if (isSolved.correct) {
-                        btnClass = 'scenario-solved-correct hover:bg-green-700';
-                        statusText = lang === 'eu' ? ' (Zuzena)' : ' (Correcto)';
-                    } else {
-                        btnClass = 'scenario-solved-incorrect hover:bg-red-700';
-                        statusText = lang === 'eu' ? ' (Ez Zuzena)' : ' (Incorrecto)';
-                    }
-                }
+  rawData.scenarios.forEach(scenario => {
+    const scenarioData = progress[scenario.id];
+    let btnClass = 'bg-blue-600 hover:bg-blue-700';
+    let statusText = '';
+    let points = 0;
 
-                container.innerHTML += `
-                    <button 
-                        class="p-4 text-white font-bold rounded-lg shadow-md transition duration-150 ${btnClass}"
-                        onclick="window.loadScenario('${scenario.id}')"
-                    >
-                        ${scenario[lang].title}
-                        <span class="text-xs block font-normal mt-1">${statusText}</span>
-                    </button>
-                `;
-            });
-        };
+    if (scenarioData && scenarioData.attempts) {
+      points = calculateScore(scenarioData.attempts);
+      
+      if (points === 2) {
+        btnClass = 'scenario-solved-correct hover:bg-green-700';
+        statusText = lang === 'eu' ? ' (2 puntu)' : ' (2 puntos)';
+      } else if (points === 1) {
+        btnClass = 'bg-yellow-600 hover:bg-yellow-700';
+        statusText = lang === 'eu' ? ' (1 puntu)' : ' (1 punto)';
+      } else if (scenarioData.attempts.length > 0) {
+        btnClass = 'scenario-solved-incorrect hover:bg-red-700';
+        statusText = lang === 'eu' ? ' (0 puntu)' : ' (0 puntos)';
+      }
+    }
+
+    container.innerHTML += `
+      <button class="p-4 text-white font-bold rounded-lg shadow-md transition duration-150 ${btnClass}" 
+              onclick="window.loadScenario('${scenario.id}')">
+        ${scenario[lang].title}
+        <span class="text-xs block font-normal mt-1">${statusText}</span>
+      </button>`;
+  });
+};
 
         window.loadScenario = (scenarioId) => {
             window.currentScenarioId = scenarioId;
