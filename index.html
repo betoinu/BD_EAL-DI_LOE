@@ -286,24 +286,26 @@ const rawData = {
     },
     { 
         id: 'B', 
-        solution: 'ID COMPETENTE',
+        solution: 'COLABORACIÓN NECESARIA',
         es: { 
             title: 'B. El Cambio de Uso Mayor (Ermita a Kafe Antzokia)', 
             summary: 'Rehabilitar una ermita del S. XIX para un Kafe Antzokia (uso de pública concurrencia). No se toca estructura.', 
             strategy: [
-                '**Especialización Funcional:** El objeto principal es la **Adecuación Funcional** del espacio y el diseño interior (aforo, distribución, estética), lo cual es competencia de la DI.',
-                '**Uso de Recinto:** El DI es plenamente competente para garantizar el cumplimiento de **DB-SUA (Seguridad de Uso)** y **DB-SI (Incendio)** dentro del recinto, demostrando la **Modificación NO Esencial**.',
-                '**Colaboración:** Solo sería necesario un Arquitecto para la consolidación estructural o si la normativa de Bienes Culturales lo exige, pero el DI lidera la adecuación del uso.'
+                '**Complejidad Estructural Histórica:** La ermita del S.XIX con plantas intermedias existentes requiere verificación de cargas para uso de pública concurrencia (cafe antzoki).',
+                '**Instalaciones de Gran Escala:** Necesidad de climatización, ventilación y acústica para alto aforo que superan el ámbito de instalaciones de recinto.',
+                '**Competencia DI Limitada:** El DI mantiene competencia en diseño interior y distribución, pero requiere colaboración obligatoria con Arquitecto para verificación estructural y de instalaciones fijas.',
+                '**Estrategia Mixta:** El DI lidera la adecuación funcional y el cumplimiento de DB-SUA/DB-SI, delegando en Arquitecto la verificación estructural y de instalaciones fijas.'
             ]
         },
         eu: { 
             title: 'B. Erabilera Aldaketa Nagusia (Ermitatik Kafe Antzokira)', 
-            summary: 'XIX. mendeko ermita bat Kafe Antzoki (jendaurreko erabilera) baterako birgaitzea. Egiturarik ez da ukitzen.', 
+            summary: 'XIX. mendeko ermita bat Kafe Antzoki (jendaurreko erabilera) baterako birgaitzea. Solairu tartekoak daude eta karga egituraren egiaztapena behar du.', 
             strategy: [
-                '**Especializazio Funtzionala:** Helburu nagusia espazioaren **Egokitzapen Funtzionala** eta barne disenua da (edukiera, banaketa, estetika), eta hori BDren eskuduntza da.',
-                '**Esparru Erabilera:** BD erabat eskuduna da **DB-SUA (Erabilera Segurtasuna)** eta **DB-SI (Sutea)** betetzen direla bermatzeko, **Ezinbestekoa EZ den Aldaketa** dela frogatuz.',
-                '**Lankidetza:** Arkitekto bat egituraren sendotzeagatik edo Kultur Ondasunen araudiak hala eskatzen badu bakarrik beharko litzateke, baina BDk gidatzen du erabileraren egokitzapena.'
-            ]
+                '**Egitura Konplexutasun Historikoa:** XIX. mendeko ermitak solairu tartekoekin jendaurreko erabilerarako (kafe antzokia) karga egiaztapena eskatzen du.',
+                '**Eskala Handiko Instalazioak:** Edukiera handiarentzako klima, aireztapen eta akustika beharrak esparruko instalazioen esparruitik harago doaz.',
+                '**BDren Eskuduntza Mugatua:** BDk barne diseinua eta banaketarako eskuduntza mantentzen du, baina beharrezkoa da Arkitektoarekin lankidetza behartua egitura eta instalazio finkoen egiaztapenerako.',
+                '**Estrategia Mistoa:** BDk gidatzen du egokitzapen funtzionala eta DB-SUA/DB-SI betetzea, Arkitektoari egitura eta instalazio finkoen egiaztapena eskuordetuz.'
+          ]
         }
     },
     { 
@@ -438,27 +440,106 @@ const rawData = {
 
     // Concepts that can be dragged and dropped
     concepts: [
-    { id: 1, es: 'Adecuación Funcional', eu: 'Egokitzapen Funtzionala', category: 'ID COMPETENTE', hint: 'La obra se centra en el uso interior sin afectar estructura troncal o envolvente mayor.' },
-    { id: 2, es: 'Instalaciones de Recinto (Punto III)', eu: 'Esparruko Instalazioak (III. puntua)', category: 'ID COMPETENTE', hint: 'Instalaciones internas (ej: tomas de agua, puntos de luz, sub-contadores) que no son acometidas fijas.' },
-    { id: 3, es: 'Escasa Entidad Constructiva', eu: 'Eraikuntza Gutxiko Entitatea', category: 'ID COMPETENTE', hint: 'Obras sencillas de reforma que no alteran la volumetría ni la estructura troncal.' },
-    { id: 4, es: 'Modificación NO Esencial', eu: 'Ezinbestekoa EZ den Aldaketa', category: 'ID COMPETENTE', hint: 'Los cambios de uso o distribución interna que mantienen las condiciones de habitabilidad y seguridad del edificio.' },
-    { id: 5, es: 'Garantía de Habitabilidad (DB-HS)', eu: 'Bizigarritasunaren Bermea (DB-HS)', category: 'ID COMPETENTE', hint: 'Cumplimiento de las condiciones mínimas de ventilación, iluminación y salubridad.' },
-    { id: 6, es: 'Conjunto Sistema Estructural', eu: 'Egitura Sistema Osoa', category: 'COLABORACIÓN NECESARIA', hint: 'Vigas, pilares, muros de carga o forjados. Requiere cálculo y firma de Arquitecto/Ingeniero.' },
-    { id: 7, es: 'Alteración de la Volumetría', eu: 'Bolumenaren Aldaketa', category: 'COLABORACIÓN NECESARIA', hint: 'Aumento de superficie construida o edificabilidad (Obra Mayor). Requiere validación urbanística superior.' },
-    { id: 8, es: 'Instalación Fija de Gran Envergadura', eu: 'Tamaina Handiko Instalazio Finkoa', category: 'COLABORACIÓN NECESARIA', hint: 'Climatización centralizada potente, ascensores, cálculos acústicos de emisión, etc. Requiere Ingeniero Industrial.' },
-    { id: 9, es: 'Ejecución de Cimentación (Obra Nueva)', eu: 'Oinarria Exekutatzea (Obra Berria)', category: 'COLABORACIÓN NECESARIA', hint: 'Construcción desde el subsuelo. Es Obra Mayor y requiere Arquitecto/Técnico Superior.' }
+        { 
+            id: 1, 
+            es: 'Adecuación Funcional', 
+            eu: 'Egokitzapen Funtzionala', 
+            category: 'ID COMPETENTE', 
+            hint: 'La obra se centra en el uso interior sin afectar estructura troncal o envolvente mayor.',
+            hint_eu: 'Lanak barne erabileran zentratzen du, egitura nagusia edo ingurune nagusia eragin gabe.'
+        },
+        { 
+            id: 2, 
+            es: 'Instalaciones de Recinto (Punto III)', 
+            eu: 'Esparruko Instalazioak (III. puntua)', 
+            category: 'ID COMPETENTE', 
+            hint: 'Instalaciones internas (ej: tomas de agua, puntos de luz, sub-contadores) que no son acometidas fijas.',
+            hint_eu: 'Barne instalazioak (adib: ur-hartuneak, argi-puntuak, azpi-kontagailuak) ez direnak hartune finkoak.'
+        },
+        { 
+            id: 3, 
+            es: 'Escasa Entidad Constructiva (Nueva Interpretación)', 
+            eu: 'Eraikuntza Gutxiko Entitatea (Interpretazio Berria)', 
+            category: 'ID COMPETENTE', 
+            hint: 'Reformas que no alteran la configuración arquitectónica esencial del edificio ni su imagen volumétrica. Incluye modificaciones de distribución interior, tabiquería no estructural, y acabados superficiales.',
+            hint_eu: 'Berrikuspenak ez du eraikinaren arkitektura konfigurazio esentziala edo irudi bolumetrikoa aldatzen. Barne banaketa aldaketak, egitura ez diren tabikeak eta azaleko akaberak barne hartzen ditu.'
+        },
+        { 
+            id: 4, 
+            es: 'Modificación NO Esencial', 
+            eu: 'Ezinbestekoa EZ den Aldaketa', 
+            category: 'ID COMPETENTE', 
+            hint: 'Los cambios de uso o distribución interna que mantienen las condiciones de habitabilidad y seguridad del edificio.',
+            hint_eu: 'Erabilera edo barne banaketa aldaketek eraikinaren bizigarritasun eta segurtasun baldintzak mantentzen dituzte.'
+        },
+        { 
+            id: 5, 
+            es: 'Garantía de Habitabilidad y Límites Urbanísticos', 
+            eu: 'Bizigarritasunaren Bermea eta Hirigintza Mugak', 
+            category: 'ID COMPETENTE', 
+            hint: 'El DI puede justificar el cumplimiento de DB-HS (salubridad) pero debe verificar los límites urbanísticos: superficie mínima, ocupación, usos permitidos. Límite: modificaciones que alteren parámetros urbanísticos.',
+            hint_eu: 'BDk DB-HS (osasun) betetzea justifika dezake baina hirigintza mugak egiaztatu behar ditu: gutxieneko azalera, okupazioa, onartutako erabilerak. Muga: hirigintza parametroak aldatzen dituzten aldaketak.'
+        },
+        { 
+            id: 6, 
+            es: 'Sistema Estructural y Cimentación (Unificado)', 
+            eu: 'Egitura Sistema eta Oinarria (Baturik)', 
+            category: 'COLABORACIÓN NECESARIA', 
+            hint: 'Cualquier intervención en elementos estructurales portantes (forjados, muros carga, pilares, vigas) o en la cimentación. Incluye apertura de vanos, refuerzos, modificaciones de cargas y nueva cimentación.',
+            hint_eu: 'Elementu egituralei (forjatuak, karga-hormak, zutabeak, habiak) edo oinarriri egindako edozein esku-hartze. Baoen irekiera, indartzeak, karga-aldaketak eta oinarri berria barne hartzen ditu.'
+        },
+        { 
+            id: 7, 
+            es: 'Alteración de la Volumetría', 
+            eu: 'Bolumenaren Aldaketa', 
+            category: 'COLABORACIÓN NECESARIA', 
+            hint: 'Aumento de superficie construida o edificabilidad (Obra Mayor). Requiere validación urbanística superior.',
+            hint_eu: 'Eraikitako azaleraren edo eraikigarritasunaren handitzea (Obra Nagusia). Goi mailako hirigintza balioztapena eskatzen du.'
+        },
+        { 
+            id: 8, 
+            es: 'Instalación Fija de Gran Envergadura', 
+            eu: 'Tamaina Handiko Instalazio Finkoa', 
+            category: 'COLABORACIÓN NECESARIA', 
+            hint: 'Climatización centralizada potente, ascensores, cálculos acústicos de emisión, etc. Requiere Ingeniero Industrial.',
+            hint_eu: 'Klima zentralizatu indartsua, igogailuak, emisio akustikoen kalkuluak, etab. Industria Ingeniaria eskatzen du.'
+        },
+        { 
+            id: 10, 
+            es: 'Intervención Total sobre el Edificio', 
+            eu: 'Eraikinaren Gaineko Eskuhartze Osoa', 
+            category: 'COLABORACIÓN NECESARIA', 
+            hint: 'Cuando la obra afecta simultáneamente a estructura, instalaciones fijas, envolvente térmica y configuración arquitectónica. Requiere dirección integrada de Arquitecto.',
+            hint_eu: 'Lanak aldi berean eragiten dionean egiturari, instalazio finkoei, ingurune termikoari eta arkitektura konfigurazioari. Arkitektoaren zuzendaritza integratua behar du.'
+        },
+        { 
+            id: 11, 
+            es: 'Cumplimiento CTE por DI (DB-HR, HS, SUA, SI)', 
+            eu: 'EKTren Betetzea BDk (DB-HR, HS, SUA, SI)', 
+            category: 'ID COMPETENTE', 
+            hint: 'El Diseñador de Interiores puede justificar y proyectar el cumplimiento de: DB-HR (protección frente al ruido), DB-HS (salubridad), DB-SUA (seguridad de utilización) y DB-SI (seguridad en caso de incendio) en intervenciones de adecuación interior.',
+            hint_eu: 'Barnealdeen Diseinatzaileak justifika eta proiekta dezake honen betetzea: DB-HR (zarataren aurkako babesa), DB-HS (osasuna), DB-SUA (erabilera segurtasuna) eta DB-SI (sute kasuan segurtasuna) barne egokitzapen esku-hartzeetan.'
+        },
+        { 
+            id: 12, 
+            es: 'Envolvente y Configuración Arquitectónica (DB-HE)', 
+            eu: 'Ingurunea eta Arkitektura Konfigurazioa (DB-HE)', 
+            category: 'COLABORACIÓN NECESARIA', 
+            hint: 'Modificaciones que alteran la imagen arquitectónica del edificio, fachadas, cubiertas, o la envolvente térmica (DB-HE). El DI puede intervenir en acabados interiores pero no en la reconfiguración arquitectónica esencial.',
+            hint_eu: 'Eraikinaren irudi arkitektonikoa, fatxadak, estalkiak edo ingurune termikoa (DB-HE) aldatzen duten aldaketak. BDk barne-akaberetan esku hartu dezake baina ez arkitektura berkonfigurazio esentzialean.'
+        }
     ],
-
+    
     // Correct combination for each scenario (Concepts required in the Defense Zone)
     correct_combinations: {
-    'A': [7], // Volume alteration requires collaboration
-    'B': [1, 4], // Functional/Non-Essential change, ID Competente
-    'C': [3, 5], // Minor entity and Habitability, ID Competente
-    'D': [8], // Large fixed installation requires collaboration
-    'E': [1, 3], // Functional adaptation and Minor entity, ID Competente
-    'F': [1, 2], // Functional adaptation and Enclosure installations, ID Competente
-    'G': [6], // Structural system alteration requires collaboration
-    'H': [6, 9] // Structural system and New foundation requires collaboration
+        'A': [7, 12], // Alteración volumetría + Envolvente arquitectónica
+        'B': [6], // Sistema estructural (verificación cargas plantas)
+        'C': [3, 5, 11], // Escasa entidad + Habitabilidad límites + Cumplimiento CTE DI
+        'D': [8, 6], // Instalación gran envergadura + Sistema estructural (vibraciones)
+        'E': [1, 3, 11], // Adecuación funcional + Escasa entidad + Cumplimiento CTE DI
+        'F': [1, 2, 11], // Adecuación funcional + Instalaciones recinto + Cumplimiento CTE DI
+        'G': [6], // Sistema estructural unificado
+        'H': [6, 12, 10] // Sistema estructural + Envolvente + Intervención total
     }
 };
 
@@ -823,14 +904,16 @@ window.renderConceptCards = () => {
     container.innerHTML = "";
     const lang = window.currentLang;
 
-    rawData.concepts.sort(() => Math.random() - 0.5).forEach(concept => { // Shuffle cards
-    container.innerHTML += `
-    <div id="card-${concept.id}" draggable="true" ondragstart="window.dragStart(event)"
-        class="card bg-gray-100 p-3 shadow-md text-sm font-semibold text-gray-800"
-        data-id="${concept.id}" data-category="${concept.category}">
-        ${concept[lang]}
-        <p class="text-xs font-normal text-gray-600 mt-1">${concept.hint}</p>
-    </div>`;
+    rawData.concepts.sort(() => Math.random() - 0.5).forEach(concept => {
+        // Usar hint_eu si está disponible, si no usar hint original
+        const hintText = concept.hint_eu || concept.hint;
+        container.innerHTML += `
+        <div id="card-${concept.id}" draggable="true" ondragstart="window.dragStart(event)"
+            class="card bg-gray-100 p-3 shadow-md text-sm font-semibold text-gray-800"
+            data-id="${concept.id}" data-category="${concept.category}">
+            ${concept[lang]}
+            <p class="text-xs font-normal text-gray-600 mt-1">${hintText}</p>
+        </div>`;
     });
 };
 
