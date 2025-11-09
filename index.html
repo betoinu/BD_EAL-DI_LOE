@@ -310,23 +310,23 @@ const rawData = {
     },
     { 
         id: 'C', 
-        solution: 'ID COMPETENTE',
+        solution: 'COLABORACIÓN NECESARIA', // CAMBIADO de ID COMPETENTE
         es: { 
             title: 'C. La Segregación de Vivienda', 
-            summary: 'Dividir una vivienda grande en dos más pequeñas. Implica tirar tabiques no portantes y duplicar instalaciones de recinto.', 
+            summary: 'Dividir una vivienda grande en dos más pequeñas. Implica verificación de superficie mínima, condiciones de habitabilidad y parámetros urbanísticos.', 
             strategy: [
-                '**Volumetría Neutra:** Es una obra **volumétricamente neutra** (no es Obra Mayor). El límite es el urbanismo (superficie mínima), no la obra en sí.',
-                '**Especialización en Habitabilidad:** El DI es el técnico competente para demostrar la **Garantía de Habitabilidad** (DB-HS: ventilación, iluminación, superficie mínima) de las nuevas unidades.',
-                '**Instalaciones de Recinto:** La duplicación de contadores/sub-contadores es **Instalación de Recinto** (Punto III), competencia directa del DI, sin afectar la acometida fija principal.'
+                '**Límite Urbanístico Primario:** La creación de nuevas viviendas requiere verificación de superficie mínima, condiciones de habitabilidad y parámetros urbanísticos reservados a Arquitecto.',
+                '**Alteración de División Horizontal:** Cualquier modificación que afecte a la división horizontal del edificio requiere proyecto de Arquitecto según LOE Art. 13.',
+                '**Competencia DI Excluida:** El DI no puede certificar cumplimiento de parámetros urbanísticos ni condiciones de habitabilidad para creación de nuevas viviendas.'
             ]
         },
         eu: { 
             title: 'C. Etxebizitzaren Segregazioa', 
-            summary: 'Etxebizitza handi bat bi txikiagotan zatitzea. Egiturazkoak ez diren tabikeak bota eta esparruko instalazioak bikoiztea dakar.', 
+            summary: 'Etxebizitza handi bat bi txikiagotan zatitzea. Gutxieneko azaleraren egiaztapena, bizigarritasun baldintzak eta hirigintza parametroak eskatzen ditu.', 
             strategy: [
-                '**Bolumetría Neutroa:** **Bolumen aldetik neutroa** den obra da (ez da Obra Nagusia). Muga hirigintza da (gutxieneko azalera), ez obra bera.',
-                '**Bizigarritasun Especializazioa:** BD da unitate berrien **Bizigarritasunaren Bermea** (DB-HS: aireztapena, argiztapena, gutxieneko azalera) frogatzeko teknikari eskuduna.',
-                '**Esparruko Instalazioak:** Kontagailuak/azpi-kontagailuak bikoiztea **Esparruko Instalazioa** da (III. puntua), BDren eskuduntza zuzena, hartune finko nagusiari eragin gabe.'
+                '**Hirigintza Muga Nagusia:** Etxebizitza berrien sorrerak gutxieneko azaleraren egiaztapena, bizigarritasun baldintzak eta hirigintza parametroak eskatzen ditu, Arkitektoari erreserbatuak.',
+                '**Banaketa Horizontala Aldatzea:** Eraikinaren banaketa horizontala eragiten duen edozein aldaketak Arkitektoaren proiektua eskatzen du LOF 13. artikuluaren arabera.',
+                '**BDren Eskuduntza Baztertua:** BDk ezin du hirigintza parametroen edo etxebizitza berrien bizigarritasun baldintzen betetzea ziurtatu.'
             ]
         }
     },
@@ -445,18 +445,20 @@ const rawData = {
         title: 'I. Reforma Integral Local Comercial en Edificio Histórico', 
         summary: 'Rehabilitación completa de local comercial en edificio catalogado (S. XIX). Incluye nueva distribución, instalaciones completas y adecuación a normativa actual.', 
         strategy: [
-            '**Protección Patrimonial:** Edificio catalogado requiere informe de Conservación Histórica y posible intervención de Arquitecto especializado.',
-            '**Intervención Integral:** Combinación de modificación estructural (refuerzos), instalaciones fijas (climatización, electricidad) y adecuación funcional.',
-            '**Estrategia DI:** Puede liderar el diseño interior y distribución, pero necesita colaboración con Arquitecto para aspectos estructurales y patrimoniales.'
-        ]
-    },
+             '**Protección Patrimonial:** Edificio catalogado requiere informe de Conservación Histórica y posible intervención de Arquitecto especializado en patrimonio.',
+             '*Limitación Competencial DI:** Las intervenciones en elementos protegidos (fachadas, estructura original, elementos decorativos) están fuera del ámbito del DI.',
+             '**Intervención Integral:** Combinación de modificación estructural (refuerzos), instalaciones fijas y adecuación funcional supera competencia única del DI.',
+             '**Estrategia Mixta:** El DI puede liderar el diseño interior de elementos no protegidos, pero necesita colaboración obligatoria para aspectos patrimoniales y estructurales.'
+         ]
+     },
     eu: { 
         title: 'I. Eraikin Historikoko Merkataritza Lokalaren Erreforma Integrala', 
         summary: 'XIX. mendeko eraikin katalogatuan merkataritza lokal baten eraberritze osoa. Banaketa berria, instalazio osoak eta egungo araudiara egokitzapena barne hartzen ditu.', 
         strategy: [
-            '**Ondare Babesa:** Katalogatutako eraikinak Historia Kontserbazio txostena eta posible da Arkitekto espezializatuaren esku-hartzea behar dituela.',
-            '**Eskuhartze Integrala:** Egitura aldaketa (indartzeak), instalazio finkoak (klimatizazioa, argindarra) eta egokitzapen funtzionalaren konbinaketa.',
-            '**BD Estrategia:** Barne diseinua eta banaketa gidatu ditzake, baina Arkitektoarekin lankidetza behar du egitura eta ondare alderdietarako.'
+            '**Ondare Babesa:** Katalogatutako eraikinak Historia Kontserbazio txostena eta posible da ondarean espezializatutako Arkitektoaren esku-hartzea behar ditu.',
+            '**BDren Eskuduntza Mugaketa:** Elementu babestuetan (fatxadak, egitura originala, elementu dekoratiboak) egindako esku-hartzeak BDren esparrutik kanpo daude.',
+            '**Eskuhartze Integrala:** Egitura aldaketa (indartzeak), instalazio finkoak eta egokitzapen funtzionalaren konbinaketa BDren eskuduntza bakarrak gainditzen du.',
+            '**Estrategia Mistoa:** BDk elementu ez babestuen barne diseinua gidatu dezake, baina ondare eta egitura alderdietarako lankidetza behar du.'
         ]
     }
 },
@@ -572,11 +574,11 @@ const rawData = {
         },
         { 
             id: 6, 
-            es: 'Sistema Estructural y Cimentación (Unificado)', 
-            eu: 'Egitura Sistema eta Oinarria (Baturik)', 
+            es: 'Sistema Estructural y Cimentación', 
+            eu: 'Egitura Sistema eta Eraikin-oinarriak', 
             category: 'COLABORACIÓN NECESARIA', 
             hint: 'Cualquier intervención en elementos estructurales portantes (forjados, muros carga, pilares, vigas) o en la cimentación. Incluye apertura de vanos, refuerzos, modificaciones de cargas y nueva cimentación.',
-            hint_eu: 'Elementu egituralei (forjatuak, karga-hormak, zutabeak, habiak) edo oinarriri egindako edozein esku-hartze. Baoen irekiera, indartzeak, karga-aldaketak eta oinarri berria barne hartzen ditu.'
+            hint_eu: 'Elementu egituralei (forjatuak, karga-hormak, zutabeak, habiak) edo eraikin-oinarriri egindako edozein esku-hartze. Baoen irekiera, indartzeak, karga-aldaketak eta oinarri berria barne hartzen ditu.'
         },
         { 
             id: 7, 
@@ -617,23 +619,32 @@ const rawData = {
             category: 'COLABORACIÓN NECESARIA', 
             hint: 'Modificaciones que alteran la imagen arquitectónica del edificio, fachadas, cubiertas, o la envolvente térmica (DB-HE). El DI puede intervenir en acabados interiores pero no en la reconfiguración arquitectónica esencial.',
             hint_eu: 'Eraikinaren irudi arkitektonikoa, fatxadak, estalkiak edo ingurune termikoa (DB-HE) aldatzen duten aldaketak. BDk barne-akaberetan esku hartu dezake baina ez arkitektura berkonfigurazio esentzialean.'
+        },
+        {
+            id: 13,
+            es: 'Intervención en Edificio Catalogado o Protegido',
+            eu: 'Eraikin Katalogatu edo Babestuan Eskuhartzea',
+            category: 'COLABORACIÓN NECESARIA',
+            hint: 'Cualquier intervención en edificios con protección patrimonial requiere informe de Conservación Histórica y posible dirección de Arquitecto especializado. El DI puede intervenir en elementos no protegidos con autorización.',
+            hint_eu: 'Ondare babesa duten eraikinetan egindako edozein esku-hartzek Historia Kontserbazio txostena eta posible da Arkitekto espezializatuaren zuzendaritza eskatzen du. BDk elementu ez babestuetan esku hartu dezake baimenarekin.'
         }
+],
     ],
     
     // Correct combination for each scenario (Concepts required in the Defense Zone)
-    correct_combinations: {
-        'A': [7, 12],    // Alteración volumetría + Envolvente arquitectónica
-        'B': [6],        // Sistema estructural (verificación cargas plantas)
-        'C': [3, 5, 11], // Escasa entidad + Habitabilidad límites + Cumplimiento CTE DI
-        'D': [8, 6],     // Instalación gran envergadura + Sistema estructural (vibraciones)
-        'E': [1, 3, 11], // Adecuación funcional + Escasa entidad + Cumplimiento CTE DI
-        'F': [1, 2, 11], // Adecuación funcional + Instalaciones recinto + Cumplimiento CTE DI (MANTENIDO)
-        'G': [6],        // Sistema estructural unificado
-        'H': [6, 12, 10],// Sistema estructural + Envolvente + Intervención total
-        'I': [10, 12, 6],// Intervención total + Envolvente + Sistema estructural (edificio histórico)
-        'J': [6, 8, 10], // Sistema estructural + Instalación gran envergadura + Intervención total
-        'K': [1, 11, 3], // Adecuación funcional + Cumplimiento CTE DI + Escasa entidad
-        'L': [7, 12, 10] // Alteración volumetría + Envolvente + Intervención total
+        correct_combinations: {
+        'A': [7, 12],       // Cerramiento balcón: Volumen + Envolvente
+        'B': [6, 13, 8],    // Ermita: Estructural + Catalogado + Instalaciones
+        'C': [7, 5],        // Segregación: Alteración volumetría + Habitabilidad límites urbanísticos
+        'D': [8, 6],        // Discoteca: Instalaciones + Estructural
+        'E': [1, 3, 11],    // Transformación local: Funcional + Escasa entidad + CTE DI
+        'F': [1, 11, 3],    // Stand feria: Funcional + CTE DI + Escasa entidad
+        'G': [6],           // Apertura vanos: Estructural
+        'H': [6, 7, 10],    // Ampliación: Estructural + Volumetría + Total
+        'I': [13, 10],      // Edificio histórico: Catalogado + Intervención total
+        'J': [6, 8],        // Ascensor: Estructural + Instalaciones
+        'K': [1, 11, 3],    // Accesibilidad: Funcional + CTE DI + Escasa entidad
+        'L': [7, 10]        // Ático: Volumetría + Intervención total
     }
 };
 
@@ -992,8 +1003,11 @@ window.renderConceptCards = () => {
     const lang = window.currentLang;
 
     rawData.concepts.sort(() => Math.random() - 0.5).forEach(concept => {
-        // Usar hint_eu si está disponible, si no usar hint original
-        const hintText = concept.hint_eu || concept.hint;
+        // CORRECCIÓN: Usar hint en el idioma correcto
+        const hintText = lang === 'eu' ? 
+            (concept.hint_eu || concept.hint) : 
+            concept.hint;
+            
         container.innerHTML += `
         <div id="card-${concept.id}" draggable="true" ondragstart="window.dragStart(event)"
             class="card bg-gray-100 p-3 shadow-md text-sm font-semibold text-gray-800"
