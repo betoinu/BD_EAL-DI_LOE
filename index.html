@@ -268,7 +268,7 @@ const rawData = {
         id: 'A', 
         solution: 'COLABORACIÓN NECESARIA',
         es: { 
-            title: 'A. El Cerramiento de Balcón (Volumen)', 
+            title: 'A. El Cerramiento de Balcón', 
             summary: 'Cerrar un balcón con estructura ligera y vidrio, aumentando la superficie útil interior.', 
             strategy: [
                 '**Límite Urbanístico (Alteración del Volumen):** El aumento de la superficie habitable o construida obliga a revisar el coeficiente de edificabilidad, lo que empuja el proyecto a Obra Mayor o requiere la firma de un Arquitecto/Técnico para el cálculo volumétrico.',
@@ -276,7 +276,7 @@ const rawData = {
             ]
         },
         eu: { 
-            title: 'A. Balkoiaren Itxitura (Bolumena)', 
+            title: 'A. Balkoiaren Itxitura', 
             summary: 'Balkoi bat egitura arinez eta beiraz ixtea, barruko azalera erabilgarria handituz.', 
             strategy: [
                 '**Hirigintza Muga (Bolumenaren Aldaketa):** Bizigarri den edo eraikitako azaleraren handitzeak eraikigarritasun koefizientea berrikustea dakar. Horrek proiektua Obra Nagusira bultzatzen du edo Arkitekto/Teknikari baten sinadura eskatzen du kalkulu bolumetrikoa egiteko.',
@@ -378,21 +378,23 @@ const rawData = {
         id: 'F', 
         solution: 'ID COMPETENTE',
         es: { 
-            title: 'F. División Comercial (Local en Dos Tiendas)', 
-            summary: 'Segregación de un gran local comercial en dos unidades independientes (dos tiendas) con aperturas de puertas y nuevos aseos.', 
+            title: 'F. Diseño y Montaje de Stand en Feria de Muestras', 
+            summary: 'Diseño completo de stand temporal en recinto ferial. Incluye estructura desmontable, iluminación especializada, gráfica y distribución espacial para exposición comercial.', 
             strategy: [
-                '**Naturaleza de la Obra:** La obra es una **Adecuación Funcional** y una **Modificación NO Esencial** de la distribución interna. No hay Obra Mayor.',
-                '**Instalaciones:** La duplicación de los cuartos húmedos y sub-contadores es competencia del DI.',
-                '**Defensa:** El DI firma y proyecta la distribución, la evacuación (DB-SI) y la accesibilidad (DB-SUA) de las dos nuevas unidades comerciales.'
+                '**Instalación Temporal Desmontable:** El stand es una estructura temporal no sujeta a licencia de obra, competencia directa del Diseñador de Interiores.',
+                '**Diseño Espacial y Gráfico:** Composición espacial, circulación, iluminación escénica y diseño gráfico son competencias nucleares del DI.',
+                '**Instalaciones Efímeras:** Todos los sistemas (eléctricos, iluminación, audiovisuales) son instalaciones temporales de recinto ferial.',
+                '**Cumplimiento Normativa Ferial:** El DI garantiza cumplimiento de normativa específica del recinto (aforo, seguridad contra incendios, accesibilidad).'
             ]
         },
         eu: { 
-            title: 'F. Merkataritza Zatiketa (Lokal Bat Bi Dendatan)', 
-            summary: 'Merkataritza-lokal handi bat bi unitate independentetan (bi denda) bereiztea, ate irekiera eta komun berriekin.', 
+            title: 'F. Erakustazokako Standaren Diseinua eta Muntaketa', 
+            summary: 'Erakustazoko eremu bateko stand temporala osorik diseinatzea. Egitura desmuntagarria, argiztapen espezializatua, grafika eta espazio banaketa barne hartzen ditu erakusketa komertzialerako.', 
             strategy: [
-                '**Obraren Izaera:** Obra **Egokitzapen Funtzionala** eta barne banaketaren **Ezinbestekoa EZ den Aldaketa** da. Ez dago Obra Nagusirik.',
-                '**Instalazioak:** Gela hezeak eta azpi-kontagailuak bikoiztea BDren eskuduntza da.',
-                '**Defentsa:** BDk sinatzen eta proiektatzen ditu bi merkataritza-unitate berrien banaketa, ebakuazioa (DB-SI) eta irisgarritasuna (DB-SUA).'
+                '**Instalazio Temporala Desmuntagarria:** Standa obra lizentziaren mende ez dagoen egitura temporala da, Barnealdeen Diseinatzailearen eskuduntza zuzena.',
+                '**Espazio eta Grafiko Diseinua:** Konposizio espaziala, zirkulazioa, eszenikoa argiztapena eta grafiko diseinua BDren eskuduntza nuklearrak dira.',
+                '**Instalazio Efemeroak:** Sistema guztiak (elektrikoak, argiztapena, audiobisualak) erakustazokoko esparruko instalazio temporalak dira.',
+                '**Erakustazoko Araudi Betetzea:** BDk erakustazoko araudi espezifikoa betetzen duela bermatzen du (edukiera, suteen aurkako segurtasuna, irisgarritasuna).'
             ]
         }
     },
@@ -435,8 +437,96 @@ const rawData = {
                 '**Obra Nagusia / Egitura Sistema Osoaren Aldaketa:** Obra Nagusiko kasu argia da, oinarria egauzatzea (Obra Berria), egitura-sistema aldatzea (karga-transferentzia oinarri/horma berrira) eta inguratzailearen aldaketa dakarrelako. Nahitaezkoa da **Arkitekto** edo goi mailako teknikari baten sinadura. BDk handitzearen barne-akabera eta banaketa diseina ditzake, baina egiturazko oinarria goi mailako teknikari batek zuzendu behar du.'
             ]
         }
+    },
+    { 
+    id: 'I', 
+    solution: 'COLABORACIÓN NECESARIA',
+    es: { 
+        title: 'I. Reforma Integral Local Comercial en Edificio Histórico', 
+        summary: 'Rehabilitación completa de local comercial en edificio catalogado (S. XIX). Incluye nueva distribución, instalaciones completas y adecuación a normativa actual.', 
+        strategy: [
+            '**Protección Patrimonial:** Edificio catalogado requiere informe de Conservación Histórica y posible intervención de Arquitecto especializado.',
+            '**Intervención Integral:** Combinación de modificación estructural (refuerzos), instalaciones fijas (climatización, electricidad) y adecuación funcional.',
+            '**Estrategia DI:** Puede liderar el diseño interior y distribución, pero necesita colaboración con Arquitecto para aspectos estructurales y patrimoniales.'
+        ]
+    },
+    eu: { 
+        title: 'I. Eraikin Historikoko Merkataritza Lokalaren Erreforma Integrala', 
+        summary: 'XIX. mendeko eraikin katalogatuan merkataritza lokal baten eraberritze osoa. Banaketa berria, instalazio osoak eta egungo araudiara egokitzapena barne hartzen ditu.', 
+        strategy: [
+            '**Ondare Babesa:** Katalogatutako eraikinak Historia Kontserbazio txostena eta posible da Arkitekto espezializatuaren esku-hartzea behar dituela.',
+            '**Eskuhartze Integrala:** Egitura aldaketa (indartzeak), instalazio finkoak (klimatizazioa, argindarra) eta egokitzapen funtzionalaren konbinaketa.',
+            '**BD Estrategia:** Barne diseinua eta banaketa gidatu ditzake, baina Arkitektoarekin lankidetza behar du egitura eta ondare alderdietarako.'
+        ]
     }
-    ],
+},
+{ 
+    id: 'J', 
+    solution: 'COLABORACIÓN NECESARIA',
+    es: { 
+        title: 'J. Instalación de Ascensor en Comunidad de Vecinos', 
+        summary: 'Instalación de nuevo ascensor en comunidad de vecinos existente. Requiere obra civil, hueco en forjados y nueva instalación electromecánica.', 
+        strategy: [
+            '**Obra Civil Estructural:** Apertura de huecos en forjados existentes y construcción de foso de ascensor afectan al sistema estructural.',
+            '**Instalación Especializada:** Ascensor es instalación fija de gran envergadura que requiere Ingeniero Industrial para cálculos electromecánicos.',
+            '**Competencia DI Limitada:** El DI puede coordinar el diseño de vestíbulo y acabados, pero la obra civil y instalación requieren técnicos superiores.'
+        ]
+    },
+    eu: { 
+        title: 'J. Igogailuaren Instalazioa Bizilagunen Komunitatean', 
+        summary: 'Dagoen bizilagunen komunitatean igogailu berriaren instalazioa. Lan zibila, forjatuetako hutsuneak eta instalazio elektromekaniko berria eskatzen ditu.', 
+        strategy: [
+            '**Egitura Lan Zibila:** Forjatu existenteetako hutsuneen irekiera eta igogailuaren hobiaren eraikuntza egitura-sistemari eragiten diote.',
+            '**Instalazio Espezializatua:** Igogailua tamaina handiko instalazio finkoa da eta Industria Ingeniaria eskatzen du kalkulu elektromekanikoetarako.',
+            '**BDren Eskuduntza Mugatua:** BDk gela nagusiaren diseinua eta akaberak koordinatu ditzake, baina lan zibila eta instalazioak goi mailako teknikariak eskatzen ditu.'
+        ]
+    }
+},
+{ 
+    id: 'K', 
+    solution: 'ID COMPETENTE',
+    es: { 
+        title: 'K. Adecuación de Vivienda para Personas con Movilidad Reducida', 
+        summary: 'Reforma de vivienda existente para mejorar accesibilidad: eliminación de barreras arquitectónicas, adaptación de baños y cocina, sin modificaciones estructurales.', 
+        strategy: [
+            '**Adecuación Funcional Especializada:** El DI es competente para diseñar soluciones de accesibilidad y eliminar barreras arquitectónicas internas.',
+            '**Cumplimiento DB-SUA:** Garantizar condiciones de accesibilidad y seguridad de utilización es competencia directa del Diseñador de Interiores.',
+            '**Instalaciones de Recinto:** Adaptación de baños y cocina con grifería especial, barras de apoyo, etc., son instalaciones de recinto competencia del DI.'
+        ]
+    },
+    eu: { 
+        title: 'K. Etxebizitzaren Egokitzapen Mugikortasun Urriko Pertsonentzat', 
+        summary: 'Dagoen etxebizitzaren berrikuspena irisgarritasuna hobetzeko: arkitektura hesiak kentzea, komunak eta sukaldea egokitzea, egitura aldaketarik gabe.', 
+        strategy: [
+            '**Egokitzapen Funtzional Espezializatua:** BD da irisgarritasun irtenbideak diseinatzeko eta barne arkitektura hesiak kentzeko eskuduna.',
+            '**DB-SUA Betetzea:** Irisgarritasun eta erabilera segurtasun baldintzak bermatzea Barnealdeen Diseinatzailearen eskuduntza zuzena da.',
+            '**Esparruko Instalazioak:** Komunak eta sukaldea egokitzea griferia bereziarekin, euskarri barrak, etab., esparruko instalazioak dira BDren eskuduntza.'
+        ]
+    }
+},
+{ 
+    id: 'L', 
+    solution: 'COLABORACIÓN NECESARIA',
+    es: { 
+        title: 'L. Creación de Vivienda en Ático mediante Cubrición de Terraza', 
+        summary: 'Transformación de terraza comunitaria en ático habitable mediante cerramiento completo. Incluye estructura ligera, instalaciones y acabados interiores.', 
+        strategy: [
+            '**Alteración Volumétrica Completa:** La cubrición de terraza altera la volumetría del edificio y constituye obra mayor que afecta a la configuración arquitectónica.',
+            '**Afectación a Comunidad:** Obra que modifica elementos comunes (cubierta, fachada) requiere proyecto de Arquitecto y aprobación de la comunidad.',
+            '**Competencia DI Parcial:** El DI puede diseñar el interior y distribución, pero la obra de cerramiento y modificación volumétrica requiere Arquitecto.'
+        ]
+    },
+    eu: { 
+        title: 'L. Etxebizitza Sortzea Teilatuan Terraza Estaliz', 
+        summary: 'Terraza komunitarioa bizigarri den teilatu bihurtzea estaltze oso bidez. Egitura arina, instalazioak eta barne akaberak barne hartzen ditu.', 
+        strategy: [
+            '**Bolumen Aldaketa Osoa:** Terraza estaltzeak eraikinaren bolumetria aldatzen du eta arkitektura konfigurazioari eragiten dion obra nagusia osatzen du.',
+            '**Komunitateari Eragina:** Elementu komunak (estalkia, fatxada) aldatzen dituen obrak Arkitektoaren proiektua eta komunitatearen onarpena eskatzen du.',
+            '**BDren Eskuduntza Partziala:** BDk barnealdea eta banaketa diseina ditzake, baina estaltze lana eta bolumen aldaketa Arkitektoa eskatzen du.'
+        ]
+    }
+},
+],
 
     // Concepts that can be dragged and dropped
     concepts: [
@@ -532,14 +622,18 @@ const rawData = {
     
     // Correct combination for each scenario (Concepts required in the Defense Zone)
     correct_combinations: {
-        'A': [7, 12], // Alteración volumetría + Envolvente arquitectónica
-        'B': [6], // Sistema estructural (verificación cargas plantas)
+        'A': [7, 12],    // Alteración volumetría + Envolvente arquitectónica
+        'B': [6],        // Sistema estructural (verificación cargas plantas)
         'C': [3, 5, 11], // Escasa entidad + Habitabilidad límites + Cumplimiento CTE DI
-        'D': [8, 6], // Instalación gran envergadura + Sistema estructural (vibraciones)
+        'D': [8, 6],     // Instalación gran envergadura + Sistema estructural (vibraciones)
         'E': [1, 3, 11], // Adecuación funcional + Escasa entidad + Cumplimiento CTE DI
-        'F': [1, 2, 11], // Adecuación funcional + Instalaciones recinto + Cumplimiento CTE DI
-        'G': [6], // Sistema estructural unificado
-        'H': [6, 12, 10] // Sistema estructural + Envolvente + Intervención total
+        'F': [1, 2, 11], // Adecuación funcional + Instalaciones recinto + Cumplimiento CTE DI (MANTENIDO)
+        'G': [6],        // Sistema estructural unificado
+        'H': [6, 12, 10],// Sistema estructural + Envolvente + Intervención total
+        'I': [10, 12, 6],// Intervención total + Envolvente + Sistema estructural (edificio histórico)
+        'J': [6, 8, 10], // Sistema estructural + Instalación gran envergadura + Intervención total
+        'K': [1, 11, 3], // Adecuación funcional + Cumplimiento CTE DI + Escasa entidad
+        'L': [7, 12, 10] // Alteración volumetría + Envolvente + Intervención total
     }
 };
 
