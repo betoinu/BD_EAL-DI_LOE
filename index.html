@@ -400,7 +400,7 @@ const rawData = {
         id: 'G', 
         solution: 'COLABORACIÓN NECESARIA',
         es: { 
-            title: 'G. Apertura de Vanos en Forjado (Línea Roja Estructural)', 
+            title: 'G. Apertura de Vanos en Forjado', 
             summary: 'Abrir un vano de 1.5 x 1.5 metros en el forjado entre dos plantas para instalar una escalera interior de diseño.', 
             strategy: [
                 '**LÍNEA ROJA INELUDIBLE:** Cualquier apertura en un forjado, muro de carga, pilar o viga afecta directamente al **Conjunto Sistema Estructural** del edificio.',
@@ -409,7 +409,7 @@ const rawData = {
             ]
         },
         eu: { 
-            title: 'G. Forjaduko Baoen Irekiera (Egiturazko Marra Gorria)', 
+            title: 'G. Forjaduko Baoen Irekiera', 
             summary: '1.5 x 1.5 metroko bao bat irekitzea bi solaireen arteko forjaduan barneko eskaliera diseinatu bat instalatzeko.', 
             strategy: [
                 '**EZINBESTEKO MARRA GORRIA:** Forjatu, karga-horma, zutabe edo habetan egindako edozein irekierak zuzenean eragiten dio eraikinaren **Egitura Sistema Osuari**.',
@@ -429,10 +429,10 @@ const rawData = {
             ]
         },
         eu: { 
-            title: 'H. Familia Bakarreko Etxebizitzaren Luzapena (Oinarri Berria)', 
+            title: 'H. Familia Bakarreko Etxebizitzaren Handitzea (Oin Berriko eraikina)', 
             summary: 'Familia bakarreko etxebizitzaren fatxada nagusian luzapen bat proposatzen da, oinarri-lauza berri baten eraikuntza eta bolumen berriari eusteko karga-horma bat barne.', 
             strategy: [
-                '**Obra Nagusia / Egitura Sistema Osoaren Aldaketa:** Obra Nagusiko kasu argia da, oinarria exekutatzea (Obra Berria), egitura-sistema aldatzea (karga-transferentzia oinarri/horma berrira) eta ingurunearen aldaketa dakarrelako. Nahitaezkoa da **Arkitekto** edo goi mailako teknikari baten sinadura. BDk luzapenaren barne-akabera eta banaketa diseina ditzake, baina egiturazko oinarria goi mailako teknikari batek zuzendu behar du.'
+                '**Obra Nagusia / Egitura Sistema Osoaren Aldaketa:** Obra Nagusiko kasu argia da, oinarria egauzatzea (Obra Berria), egitura-sistema aldatzea (karga-transferentzia oinarri/horma berrira) eta inguratzailearen aldaketa dakarrelako. Nahitaezkoa da **Arkitekto** edo goi mailako teknikari baten sinadura. BDk handitzearen barne-akabera eta banaketa diseina ditzake, baina egiturazko oinarria goi mailako teknikari batek zuzendu behar du.'
             ]
         }
     }
@@ -850,32 +850,25 @@ window.renderScenarioButtons = (progress) => {
     const lang = window.currentLang;
 
     rawData.scenarios.forEach(scenario => {
-    const scenarioData = progress[scenario.id];
-    let btnClass = 'bg-blue-600 hover:bg-blue-700';
-    let statusText = '';
-    let points = 0;
+        const scenarioData = progress[scenario.id];
+        let btnClass = 'p-4 font-bold rounded-lg shadow-md transition duration-150 bg-blue-600 hover:bg-blue-700 text-white';
 
-    if (scenarioData && scenarioData.attempts) {
-    points = calculateScore(scenarioData.attempts);
+        if (scenarioData && scenarioData.attempts) {
+            const points = calculateScore(scenarioData.attempts);
 
-    if (points === 3) {
-    btnClass = 'scenario-solved-correct hover:bg-green-700';
-    statusText = lang === 'eu' ? ' (3 puntu)' : ' (3 puntos)';
-    } else if (points === 1) {
-    btnClass = 'bg-yellow-600 hover:bg-yellow-700';
-    statusText = lang === 'eu' ? ' (1 puntu)' : ' (1 punto)';
-    } else if (scenarioData.attempts.length > 0) {
-    btnClass = 'scenario-solved-incorrect hover:bg-red-700';
-    statusText = lang === 'eu' ? ' (0 puntu)' : ' (0 puntos)';
-    }
-    }
+            if (points === 3) {
+                btnClass = 'p-4 font-bold rounded-lg shadow-md transition duration-150 scenario-solved-correct hover:bg-green-700 text-white';
+            } else if (points === 1) {
+                btnClass = 'p-4 font-bold rounded-lg shadow-md transition duration-150 bg-yellow-600 hover:bg-yellow-700 text-white';
+            } else if (scenarioData.attempts.length > 0) {
+                btnClass = 'p-4 font-bold rounded-lg shadow-md transition duration-150 scenario-solved-incorrect hover:bg-red-700 text-white';
+            }
+        }
 
-    container.innerHTML += `
-    <button class="p-4 text-white font-bold rounded-lg shadow-md transition duration-150 ${btnClass}"
-        onclick="window.loadScenario('${scenario.id}')">
-        ${scenario[lang].title}
-        <span class="text-xs block font-normal mt-1">${statusText}</span>
-    </button>`;
+        container.innerHTML += `
+            <button class="${btnClass}" onclick="window.loadScenario('${scenario.id}')">
+                ${scenario[lang].title}
+            </button>`;
     });
 };
 
